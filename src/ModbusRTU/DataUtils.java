@@ -22,7 +22,7 @@ public class DataUtils {
         return result;
     }
 
-    private static int[] trimInts(int[] arr) {
+    public static int[] trimInts(int[] arr) {
         int[] resultArr = new int[arr.length];
         for (int i = 0; i < arr.length; i++) {
             resultArr[i] = arr[i] & 0x0000FFFF;

@@ -6,7 +6,7 @@
 package ModbusRTU;
 
 import de.re.easymodbus.exceptions.ModbusException;
-import de.re.easymodbus.modbusclient.ModbusClient;
+//import de.re.easymodbus.modbusclient.ModbusClient;
 import java.awt.Button;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -55,8 +55,8 @@ public class ModbusTester extends JFrame {
         Thread.sleep(2000);
 //         }
     }
-    
-    public void writeFunc16(Parameter param, int [] values){
+
+    public void writeFunc16(Parameter param, int[] values) {
         try {
             modbusClient.WriteMultipleRegisters(param.address, values);
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException ex) {
@@ -121,13 +121,13 @@ public class ModbusTester extends JFrame {
                         long l = 0;
                         if (param.funcToRead == 3) {
                             l = readFunc3(param);
-                            Thread.sleep(2000);
+                            Thread.sleep(200);
                         }
-                        
-                        if (param.funcToWrite != 0){
+
+                        if (param.funcToWrite != 0) {
                             System.out.println("going to write");
-                            writeFunc16(param, DataUtils.ConvertLongToRegisters(l));
-                            Thread.sleep(2000);
+//                            writeFunc16(param, DataUtils.ConvertLongToRegisters(l));
+//                            Thread.sleep(2000);
                         }
                     }
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
