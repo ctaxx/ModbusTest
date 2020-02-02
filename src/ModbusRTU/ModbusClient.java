@@ -1280,7 +1280,7 @@ public class ModbusClient {
             bytes[1] = data[9 + i * 2 + 1];
             ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 
-            response[i] = byteBuffer.getShort();
+            response[i] = Short.toUnsignedInt(byteBuffer.getShort());
         }
 
         return (response);

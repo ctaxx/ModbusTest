@@ -32,7 +32,7 @@ public class DataUtils {
     }
     
     public static long prepareData(int [] dataArray){
-        return Integer.toUnsignedLong(dataArrayToInt(trimInts(dataArray)));
+        return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
     
     public static int[] ConvertLongToRegisters(long longValue) {
