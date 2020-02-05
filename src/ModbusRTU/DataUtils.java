@@ -21,15 +21,6 @@ public class DataUtils {
         }
         return result;
     }
-
-    public static int[] trimInts(int[] arr) {
-        int[] resultArr = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            resultArr[i] = arr[i] & 0x0000FFFF;
-//            System.out.println(resultArr[i]);
-        }
-        return resultArr;
-    }
     
     public static long prepareData(int [] dataArray){
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));

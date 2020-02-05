@@ -136,6 +136,23 @@ public class ModbusTester extends JFrame {
             }
         });
         add(runButton);
+        Button simpleTestButton = new Button("test");
+        simpleTestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int [] values = {0x11};
+                try {
+                    modbusClient.WriteMultipleRegisters(96, values);
+                } catch (ModbusException | SerialPortException | SerialPortTimeoutException ex) {
+                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SocketException ex) {
+                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        add(simpleTestButton);
         setVisible(true);
     }
 }
