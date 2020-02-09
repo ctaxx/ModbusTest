@@ -5,12 +5,13 @@
  */
 package ModbusRTU;
 
+import ModbusRTU.parameter.ParserCSV;
+import ModbusRTU.parameter.Parameter;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.BorderLayout;
 //import de.re.easymodbus.modbusclient.ModbusClient;
 import java.awt.Button;
 import java.awt.FlowLayout;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -19,9 +20,9 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
@@ -38,13 +39,15 @@ public class ModbusTester extends JFrame {
 
     JTable resultTable;
     DefaultTableModel tableModel;
+    
+    Button runButton;
 
     public static void main(String[] args) {
         new ModbusTester();
     }
 
-    public boolean init() throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttPersistenceException, MqttException, InterruptedException {
-        modbusClient = new ModbusClient("10.6.18.33", 502);
+    public boolean init(String ip, int port) throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttPersistenceException, MqttException, InterruptedException {
+        modbusClient = new ModbusClient(ip, port);
         boolean success = modbusClient.Available(2500);
         System.out.println(success);
         modbusClient.Connect();
@@ -60,8 +63,6 @@ public class ModbusTester extends JFrame {
 //        }
 //        System.out.println();
 //        resultArray = modbusClient.ReadHoldingRegisters(160, 2);
-//        long result = DataUtils.prepareData(resultArray);
-//        System.out.println(result);
         Thread.sleep(2000);
 //         }
         return success;
@@ -130,10 +131,21 @@ public class ModbusTester extends JFrame {
 
         setLayout(new BorderLayout());
 
-        Panel northPanel = new Panel();
+        JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
-
-        Button runButton = new Button("run");
+        
+        Button openButton = new Button("open");
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                runButton.setEnabled(true);
+            }
+        });
+        northPanel.add(openButton);
+        
+        runButton = new Button("run");
+        runButton.setEnabled(false);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -141,7 +153,7 @@ public class ModbusTester extends JFrame {
                 ParserCSV parser = new ParserCSV(str);
 
                 try {
-                    if (init()) {
+                    if (init("10.6.18.33", 502)) {
                         for (Parameter param : parser.getParameterArray()) {
                             long l = 0;
                             if (param.funcToRead == 3) {
@@ -157,6 +169,7 @@ public class ModbusTester extends JFrame {
         });
         northPanel.add(runButton);
         Button simpleTestButton = new Button("test");
+        simpleTestButton.setEnabled(false);
         simpleTestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
