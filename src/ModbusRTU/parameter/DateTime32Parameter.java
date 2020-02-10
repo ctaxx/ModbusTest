@@ -5,10 +5,32 @@
  */
 package ModbusRTU.parameter;
 
+import java.time.Instant;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 /**
  *
  * @author bykov_sp
  */
-public class DateTime32Parameter extends Parameter{
+public class DateTime32Parameter extends Parameter {
+
+    @Override
+    public String getResultString() {
+        long secondsFrom2000 = prepareData(resultArray);
+        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        calendar.set(2000, 0, 1, 0, 0, 0);
+        int minutes = (int) secondsFrom2000 / 60;
+        int seconds = (int) secondsFrom2000 % 60;
+        calendar.add(GregorianCalendar.MINUTE, minutes);
+        calendar.add(GregorianCalendar.SECOND, seconds);
+        Instant instant = calendar.toInstant();
+        return instant.toString();
+    }
     
+    @Override
+     public Object[] toObjectArray() {
+        Object[] obj = {name, address, getResultString(), "false"};
+        return obj;
+    }
 }

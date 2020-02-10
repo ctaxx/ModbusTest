@@ -85,42 +85,10 @@ public class ModbusTester extends JFrame {
     }
 
     public long readFunc3(Parameter param) throws ModbusException, SocketException, IOException, UnknownHostException, SerialPortException, SerialPortTimeoutException {
-        int[] resultArray;
         long result = 0;
-        String tmpStr;
-        resultArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-
-        if (param.dataType.contains("Unsigned 32")
-                || param.dataType.contains("Unsigned 16")
-                || param.dataType.contains("Enum 2")
-                || param.dataType.contains("Enum 3")
-                || param.dataType.contains("Enum 4")
-                || param.dataType.contains("Enum 5")) {
-            result = DataUtils.prepareData(resultArray);
-            tmpStr = param.name + " address=" + param.address + " value=" + result;
-            System.out.println(tmpStr);
-            Object[] obj = {param.name, param.address, result, checkInterval(param.dataType, result)};
-            tableModel.addRow(obj);
-        }
-
-        if (param.dataType.contains("Unsigned 8")) {
-            System.err.println("Unsigned 8 is not yet implemented");
-        }
-
-        if (param.dataType.contains("Unsigned 48")) {
-            System.err.println("Unsigned 48 is not yet implemented");
-        }
-
-        if (param.dataType.contains("Signed 16")) {
-            System.err.println("Signed 16 is not yet implemented");
-        }
-
-        if (param.dataType.contains("Date time 32")) {
-            result = DataUtils.prepareData(resultArray);
-            tmpStr = param.name + " address=" + param.address + " value=" + DataUtils.convertLongToDateTime32(result);
-            Object[] obj = {param.name, param.address, DataUtils.convertLongToDateTime32(result), checkInterval(param.dataType, result)};
-            tableModel.addRow(obj);
-        }
+        param.resultArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+        System.out.println(param.name + " address=" + param.address + " value=" + param.getResultString());
+        tableModel.addRow(param.toObjectArray());
         return result;
     }
 
@@ -154,10 +122,9 @@ public class ModbusTester extends JFrame {
 
                 try {
                     if (init("10.6.18.33", 502)) {
-                        for (Parameter param : parser.getParameterArray()) {
-                            long l = 0;
+                        for (Parameter param : parser.getParameterArray()) {                   
                             if (param.funcToRead == 3) {
-                                l = readFunc3(param);
+                                readFunc3(param);
                                 Thread.sleep(200);
                             }
                         }

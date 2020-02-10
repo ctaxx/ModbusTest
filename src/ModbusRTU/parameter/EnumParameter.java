@@ -5,7 +5,7 @@
  */
 package ModbusRTU.parameter;
 
-import lombok.Builder;
+import static ModbusRTU.DataUtils.dataArrayToInt;
 
 /**
  *
@@ -13,6 +13,5 @@ import lombok.Builder;
  */
 
 public class EnumParameter extends Parameter{
-    
     
 }

@@ -101,17 +101,18 @@ public class ParserCSV {
 
     private ArrayList<Parameter> arrayToParameters(ArrayList<ArrayList<String>> myArray) {
         ArrayList<Parameter> parametersArrayList = new ArrayList();
-        Parameter param = null;
+//        Parameter param = null;
         for (int i = 8; i < myArray.size(); i++) {
-            String dataType = myArray.get(i).get(7);
+            Parameter param = null;
+            String dataType = myArray.get(i).get(7);         
             if (dataType.contains("Unsigned")) {
                 param = new UnsignedParameter();
             } else if (dataType.contains("Enum")) {
-                param = new EnumParameter();
-            } else if (dataType.contains("Date Time 32")) {
-                param = new DateTime32Parameter();
+                param = new EnumParameter();            
+            } else if (dataType.contains("Date time")) {
+                param = new DateTime32Parameter();               
             } else {
-                param = new Parameter();
+                param = new Parameter();      
             }
 
 //            Parameter param = new EnumParameter.ParameterBuilder()
@@ -129,6 +130,7 @@ public class ParserCSV {
             param.numOfRegs = Short.parseShort(myArray.get(i).get(4));
             param.setFuncToRead(myArray.get(i).get(5));
             param.setFuncToWrite(myArray.get(i).get(6));
+            param.dataType = myArray.get(i).get(7);
             parametersArrayList.add(param);
         }
         return parametersArrayList;

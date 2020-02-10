@@ -24,9 +24,9 @@ public class Parameter {
     public short funcToRead;
     public short funcToWrite;
     public String dataType;
-    public long result;
     public long maxValue;
     public long minValue;
+    public int[] resultArray;
 
     public void setFuncToRead(String funcToRead) {
         if (funcToRead.equals("-")) {
@@ -56,11 +56,28 @@ public class Parameter {
     }
 
     public Object[] toObjectArray() {
-        Object[] obj = {name, address, result, "false"};
+        Object[] obj = {name, address, prepareData(resultArray), "false"};
         return obj;
     }
-    
-    public boolean checkInterval(){
+
+    public boolean checkInterval() {
         return false;
+    }
+
+    public int dataArrayToInt(int[] dataArray) {
+        int res = 0;
+        for (int i = 0; i < dataArray.length; i++) {
+            res |= (dataArray[i] << (i * 16));
+        }
+        return res;
+    }
+
+    public long prepareData(int[] dataArray) {
+        return Integer.toUnsignedLong(dataArrayToInt(dataArray));
+    }
+
+    public String getResultString() {
+        long l = prepareData(resultArray);
+        return Long.toString(l);
     }
 }

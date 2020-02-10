@@ -50,16 +50,4 @@ public class DataUtils {
                     ByteBuffer.wrap(highhighRegisterBytes).getInt()};
         return returnValue;
     }
-
-    public static String convertLongToDateTime32(long secondsFrom2000) {
-        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        calendar.set(2000, 0, 1, 0, 0, 0);
-        int minutes = (int)secondsFrom2000 / 60;
-        int seconds = (int)secondsFrom2000 % 60;
-        calendar.add(GregorianCalendar.MINUTE, minutes);
-        calendar.add(GregorianCalendar.SECOND, seconds);
-        Instant instant = calendar.toInstant();
-//        System.out.println(instant);
-        return instant.toString();
-    }
 }

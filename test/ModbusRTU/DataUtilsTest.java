@@ -63,10 +63,4 @@ public class DataUtilsTest {
         assertEquals(expResult[1], result[1]);
     }
     
-    @Test
-    public void testConvertLongToDateTime32(){
-        System.out.println("convertLongToDateTime");
-        DataUtils.convertLongToDateTime32(62);
-    }
-    
 }
