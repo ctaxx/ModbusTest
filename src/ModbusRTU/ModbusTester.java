@@ -163,10 +163,6 @@ public class ModbusTester extends JFrame implements ActionListener {
 //            fileDialog.setFile(".csv");
             if (fileDialog.getFile() != null) {
                 String str = FileUtils.fileReader(fileDialog.getDirectory() + fileDialog.getFile());
-                
-                System.err.println(fileDialog.getFile());
-                System.err.println(fileDialog.getDirectory());
-//                System.out.println(str);
                 parser = new ParserCSV(str);
                 runButton.setEnabled(true);
             }
