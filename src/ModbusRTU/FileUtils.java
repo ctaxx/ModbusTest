@@ -15,8 +15,8 @@ public class FileUtils {
     private static String INPUT_PATH = "D:/402.csv";
     private static String OUTPUT_PATH = "./output.csv";
 
-    public static String fileReader(){
-        File inputFile = new File(INPUT_PATH);
+    public static String fileReader(String inputPath){
+        File inputFile = new File(inputPath);
 
         StringBuilder stringBuilder = new StringBuilder();
 

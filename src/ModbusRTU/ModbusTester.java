@@ -11,6 +11,7 @@ import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.BorderLayout;
 //import de.re.easymodbus.modbusclient.ModbusClient;
 import java.awt.Button;
+import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,14 +34,15 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
  *
  * @author s.bikov
  */
-public class ModbusTester extends JFrame {
+public class ModbusTester extends JFrame implements ActionListener {
 
     ModbusClient modbusClient;
 
     JTable resultTable;
     DefaultTableModel tableModel;
-    
-    Button runButton;
+    ParserCSV parser;
+
+    Button openButton, runButton;
 
     public static void main(String[] args) {
         new ModbusTester();
@@ -101,28 +103,19 @@ public class ModbusTester extends JFrame {
 
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
-        
-        Button openButton = new Button("open");
-        openButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                runButton.setEnabled(true);
-            }
-        });
+
+        openButton = new Button("open");
+        openButton.addActionListener(this);
         northPanel.add(openButton);
-        
+
         runButton = new Button("run");
         runButton.setEnabled(false);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String str = FileUtils.fileReader();
-                ParserCSV parser = new ParserCSV(str);
-
                 try {
                     if (init("10.6.18.33", 502)) {
-                        for (Parameter param : parser.getParameterArray()) {                   
+                        for (Parameter param : parser.getParameterArray()) {
                             if (param.funcToRead == 3) {
                                 readFunc3(param);
                                 Thread.sleep(200);
@@ -160,5 +153,23 @@ public class ModbusTester extends JFrame {
         resultTable = new JTable(tableModel);
         add(new JScrollPane(resultTable), BorderLayout.CENTER);
         setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == openButton) {
+            FileDialog fileDialog = new FileDialog(this);
+            fileDialog.setVisible(true);
+//            fileDialog.setFile(".csv");
+            if (fileDialog.getFile() != null) {
+                String str = FileUtils.fileReader(fileDialog.getDirectory() + fileDialog.getFile());
+                
+                System.err.println(fileDialog.getFile());
+                System.err.println(fileDialog.getDirectory());
+//                System.out.println(str);
+                parser = new ParserCSV(str);
+                runButton.setEnabled(true);
+            }
+        }
     }
 }
