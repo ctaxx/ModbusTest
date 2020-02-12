@@ -104,15 +104,16 @@ public class ParserCSV {
 //        Parameter param = null;
         for (int i = 8; i < myArray.size(); i++) {
             Parameter param = null;
-            String dataType = myArray.get(i).get(7);         
+            String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
                 param = new UnsignedParameter();
             } else if (dataType.contains("Enum")) {
-                param = new EnumParameter();            
+                param = new EnumParameter();
+                param.setMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
             } else if (dataType.contains("Date time")) {
-                param = new DateTime32Parameter();               
+                param = new DateTime32Parameter();
             } else {
-                param = new Parameter();      
+                param = new Parameter();
             }
 
 //            Parameter param = new EnumParameter.ParameterBuilder()

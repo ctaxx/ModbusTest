@@ -5,7 +5,7 @@
  */
 package ModbusRTU.parameter;
 
-import lombok.Builder;
+//import lombok.Builder;
 
 /**
  *
@@ -25,9 +25,23 @@ public class Parameter {
     public short funcToWrite;
     public String dataType;
     public long maxValue;
+    public long value;
     public long minValue;
     public int[] resultArray;
 
+    public void setMaxValue(long maxValue) {
+        this.maxValue = maxValue;
+    }
+    
+    public void setMinValue(long minValue) {
+        this.minValue = minValue;
+    }
+    
+    public void setResultArray(int [] resultArray){
+        this.resultArray = resultArray;
+        this.value = prepareData(this.resultArray);
+    }
+    
     public void setFuncToRead(String funcToRead) {
         if (funcToRead.equals("-")) {
             this.funcToRead = 0;
@@ -56,7 +70,7 @@ public class Parameter {
     }
 
     public Object[] toObjectArray() {
-        Object[] obj = {name, address, prepareData(resultArray), "false"};
+        Object[] obj = {name, address, value, checkInterval()};
         return obj;
     }
 
@@ -72,12 +86,11 @@ public class Parameter {
         return res;
     }
 
-    public long prepareData(int[] dataArray) {
+    protected long prepareData(int[] dataArray) {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
 
     public String getResultString() {
-        long l = prepareData(resultArray);
-        return Long.toString(l);
+        return Long.toString(this.value);
     }
 }

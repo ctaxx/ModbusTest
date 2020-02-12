@@ -29,8 +29,13 @@ public class DateTime32Parameter extends Parameter {
     }
     
     @Override
+    public boolean checkInterval() {
+        return true;
+    }
+    
+    @Override
      public Object[] toObjectArray() {
-        Object[] obj = {name, address, getResultString(), "false"};
+        Object[] obj = {name, address, getResultString(), checkInterval()};
         return obj;
     }
 }

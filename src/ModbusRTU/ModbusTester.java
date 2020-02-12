@@ -52,7 +52,9 @@ public class ModbusTester extends JFrame implements ActionListener {
         modbusClient = new ModbusClient(ip, port);
         boolean success = modbusClient.Available(2500);
         System.out.println(success);
-        modbusClient.Connect();
+        if (success) {
+            modbusClient.Connect();
+        }
 
 //        int[] resultArray;
 //         while (true)
@@ -88,7 +90,7 @@ public class ModbusTester extends JFrame implements ActionListener {
 
     public long readFunc3(Parameter param) throws ModbusException, SocketException, IOException, UnknownHostException, SerialPortException, SerialPortTimeoutException {
         long result = 0;
-        param.resultArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+        param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
         System.out.println(param.name + " address=" + param.address + " value=" + param.getResultString());
         tableModel.addRow(param.toObjectArray());
         return result;
