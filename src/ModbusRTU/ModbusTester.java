@@ -20,10 +20,13 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
@@ -84,18 +87,6 @@ public class ModbusTester extends JFrame implements ActionListener {
         }
     }
 
-    public boolean checkInterval(String dataType, long value) {
-        return false;
-    }
-
-    public long readFunc3(Parameter param) throws ModbusException, SocketException, IOException, UnknownHostException, SerialPortException, SerialPortTimeoutException {
-        long result = 0;
-        param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
-        System.out.println(param.name + " address=" + param.address + " value=" + param.getResultString());
-        tableModel.addRow(param.toObjectArray());
-        return result;
-    }
-
     public ModbusTester() {
         super("modbus tester");
         setSize(700, 400);
@@ -119,8 +110,12 @@ public class ModbusTester extends JFrame implements ActionListener {
                     if (init("10.6.18.33", 502)) {
                         for (Parameter param : parser.getParameterArray()) {
                             if (param.funcToRead == 3) {
-                                readFunc3(param);
+                                param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
+                                System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString());
+                                tableModel.addRow(param.toObjectArray());
                                 Thread.sleep(200);
+                            }else{
+                                System.err.println(param.name + " reading impossible or haven't implemented yet");
                             }
                         }
                     }
@@ -160,11 +155,13 @@ public class ModbusTester extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == openButton) {
-            FileDialog fileDialog = new FileDialog(this);
-            fileDialog.setVisible(true);
-//            fileDialog.setFile(".csv");
-            if (fileDialog.getFile() != null) {
-                String str = FileUtils.fileReader(fileDialog.getDirectory() + fileDialog.getFile());
+            FileFilter filter = new FileNameExtensionFilter("csv", "csv");
+            JFileChooser fileDialog = new JFileChooser("D:/");
+            fileDialog.setFileFilter(filter);
+            int ret = fileDialog.showDialog(this, "Open");
+
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
                 runButton.setEnabled(true);
             }

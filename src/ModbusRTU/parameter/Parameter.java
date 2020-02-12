@@ -39,7 +39,7 @@ public class Parameter {
     
     public void setResultArray(int [] resultArray){
         this.resultArray = resultArray;
-        this.value = prepareData(this.resultArray);
+        this.value = collectDataToLong(this.resultArray);
     }
     
     public void setFuncToRead(String funcToRead) {
@@ -70,7 +70,7 @@ public class Parameter {
     }
 
     public Object[] toObjectArray() {
-        Object[] obj = {name, address, value, checkInterval()};
+        Object[] obj = {name, address, getValueString(), checkInterval()};
         return obj;
     }
 
@@ -78,7 +78,7 @@ public class Parameter {
         return false;
     }
 
-    public int dataArrayToInt(int[] dataArray) {
+    protected int dataArrayToInt(int[] dataArray) {
         int res = 0;
         for (int i = 0; i < dataArray.length; i++) {
             res |= (dataArray[i] << (i * 16));
@@ -86,11 +86,11 @@ public class Parameter {
         return res;
     }
 
-    protected long prepareData(int[] dataArray) {
+    protected long collectDataToLong(int[] dataArray) {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
 
-    public String getResultString() {
+    public String getValueString() {
         return Long.toString(this.value);
     }
 }

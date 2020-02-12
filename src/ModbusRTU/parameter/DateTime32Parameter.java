@@ -16,8 +16,8 @@ import java.util.TimeZone;
 public class DateTime32Parameter extends Parameter {
 
     @Override
-    public String getResultString() {
-        long secondsFrom2000 = prepareData(resultArray);
+    public String getValueString() {
+        long secondsFrom2000 = collectDataToLong(resultArray);
         GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         calendar.set(2000, 0, 1, 0, 0, 0);
         int minutes = (int) secondsFrom2000 / 60;
@@ -33,9 +33,4 @@ public class DateTime32Parameter extends Parameter {
         return true;
     }
     
-    @Override
-     public Object[] toObjectArray() {
-        Object[] obj = {name, address, getResultString(), checkInterval()};
-        return obj;
-    }
 }

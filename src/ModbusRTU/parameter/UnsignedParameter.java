@@ -9,6 +9,10 @@ package ModbusRTU.parameter;
  *
  * @author bykov_sp
  */
-public class UnsignedParameter extends Parameter{
-    
+public class UnsignedParameter extends Parameter {
+
+    @Override
+    public boolean checkInterval() {
+        return true;
+    }
 }
