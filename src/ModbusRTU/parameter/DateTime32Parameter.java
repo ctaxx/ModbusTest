@@ -17,20 +17,18 @@ public class DateTime32Parameter extends Parameter {
 
     @Override
     public String getValueString() {
-        long secondsFrom2000 = collectDataToLong(resultArray);
-        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        calendar.set(2000, 0, 1, 0, 0, 0);
-        int minutes = (int) secondsFrom2000 / 60;
-        int seconds = (int) secondsFrom2000 % 60;
-        calendar.add(GregorianCalendar.MINUTE, minutes);
-        calendar.add(GregorianCalendar.SECOND, seconds);
-        Instant instant = calendar.toInstant();
-        return instant.toString();
+        if (resultArray != null) {
+            long secondsFrom2000 = collectDataToLong(resultArray);
+            GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+            calendar.set(2000, 0, 1, 0, 0, 0);
+            int minutes = (int) secondsFrom2000 / 60;
+            int seconds = (int) secondsFrom2000 % 60;
+            calendar.add(GregorianCalendar.MINUTE, minutes);
+            calendar.add(GregorianCalendar.SECOND, seconds);
+            Instant instant = calendar.toInstant();
+            return instant.toString();
+        }
+        return null;
     }
-    
-    @Override
-    public boolean checkInterval() {
-        return true;
-    }
-    
+
 }

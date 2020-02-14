@@ -1103,7 +1103,7 @@ public class ModbusClient {
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public int[] ReadHoldingRegisters(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException {
+    public int[] ReadHoldingRegisters(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         int[] returnValue = this.ReadHoldingRegisters(startingAddress, quantity);
         List<String> topic = new ArrayList<String>();
         List<String> payload = new ArrayList<String>();
@@ -1143,7 +1143,7 @@ public class ModbusClient {
      * @throws SerialPortException
      */
     public int[] ReadHoldingRegisters(int startingAddress, int quantity) throws de.re.easymodbus.exceptions.ModbusException,
-            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException {
+            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         if (tcpClientSocket == null) {
             throw new de.re.easymodbus.exceptions.ConnectionException("connection Error");
         }
@@ -1261,18 +1261,22 @@ public class ModbusClient {
 //        if (((byte) data[7]) == 0x83 & ((int) data[8]) == 0x01) {
         if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x01) {
             System.out.println("FunctionCodeNotSupportedException Throwed");
+            throw new FuncException("FunctionCodeNotSupportedException Throwed");
         }
 //        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x02) {
-          if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x02) {   
-            System.err.println("Starting adress invalid or starting adress + quantity invalid");
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x02) {
+//            System.err.println("Starting address invalid or starting adress + quantity invalid");
+            throw new FuncException("Starting address invalid or starting adress + quantity invalid");
         }
 //        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x03) {
-            if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x03) {
-                System.out.println("Quantity invalid");
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x03) {
+//                System.out.println("Quantity invalid");
+            throw new FuncException("Quantity invalid");
         }
 //        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x04) {
-         if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {   
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {
             System.err.println("Error reading");
+            throw new FuncException("Error reading");
         }
         for (int i = 0; i < quantity; i++) {
             byte[] bytes = new byte[2];
@@ -2044,7 +2048,7 @@ public class ModbusClient {
             }
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x01) {
-        if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x01) { 
+        if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x01) {
             System.err.println("FunctionCodeNotSupportedException Throwed");
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x02) {

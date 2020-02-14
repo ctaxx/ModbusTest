@@ -3,12 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusRTU.parameter;
+package ModbusRTU;
 
 /**
  *
- * @author bykov_sp
+ * @author s.bikov
  */
-public class UnsignedParameter extends Parameter {
+public class FuncException extends Exception{
 
+    public FuncException() {
+    }
+
+    public FuncException(String message) {
+        super(message);
+    }
+    
 }

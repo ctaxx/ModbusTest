@@ -57,7 +57,7 @@ public class Parameter {
             this.funcToWrite = Short.parseShort(funcToWrite);
         }
     }
-
+    
     @Override
     public String toString() {
         return name
@@ -75,7 +75,7 @@ public class Parameter {
     }
 
     public boolean checkInterval() {
-        return false;
+        return resultArray != null;
     }
 
     protected int dataArrayToInt(int[] dataArray) {

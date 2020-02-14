@@ -16,12 +16,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,6 +33,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -49,6 +53,7 @@ public class ModbusTester extends JFrame implements ActionListener {
 
     JButton openButton, runButton;
     JTextField ipTextField;
+    JFormattedTextField formattedTextField;
 
     public static void main(String[] args) {
         new ModbusTester();
@@ -103,10 +108,18 @@ public class ModbusTester extends JFrame implements ActionListener {
         openButton = new JButton("open");
         openButton.addActionListener(this);
         northPanel.add(openButton);
-        
+
         ipTextField = new JTextField();
-        ipTextField.setColumns(10);
+        ipTextField.setColumns(9);
         northPanel.add(ipTextField);
+
+        try {
+            MaskFormatter mf = new MaskFormatter("##.#.##.##");
+            formattedTextField = new JFormattedTextField(mf);
+//            northPanel.add(formattedTextField);
+        } catch (ParseException ex) {
+            Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         runButton = new JButton("run");
         runButton.setEnabled(false);
@@ -115,16 +128,20 @@ public class ModbusTester extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 try {
 //                    if (init("10.6.18.33", 502)) {
-                    if (init(ipTextField.getText(), 502)) {  
+                    if (init(ipTextField.getText(), 502)) {
                         for (Parameter param : parser.getParameterArray()) {
                             if (param.funcToRead == 3) {
-                                param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
-                                System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString());
-                                tableModel.addRow(param.toObjectArray());
-                                Thread.sleep(200);
-                            }else{
+                                try {
+                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
+                                    System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString());
+                                    Thread.sleep(200);
+                                } catch (FuncException ex) {
+                                    System.err.println(ex.getMessage());
+                                }
+                            } else {
                                 System.err.println(param.name + " reading impossible or haven't implemented yet");
                             }
+                            tableModel.addRow(param.toObjectArray());
                         }
                     }
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
@@ -173,6 +190,9 @@ public class ModbusTester extends JFrame implements ActionListener {
                 parser = new ParserCSV(str);
                 runButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
+//                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
+//                formattedTextField.setValue(parser.currentIP);
+
             }
         }
     }
