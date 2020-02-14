@@ -20,11 +20,13 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -45,7 +47,8 @@ public class ModbusTester extends JFrame implements ActionListener {
     DefaultTableModel tableModel;
     ParserCSV parser;
 
-    Button openButton, runButton;
+    JButton openButton, runButton;
+    JTextField ipTextField;
 
     public static void main(String[] args) {
         new ModbusTester();
@@ -97,17 +100,22 @@ public class ModbusTester extends JFrame implements ActionListener {
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
 
-        openButton = new Button("open");
+        openButton = new JButton("open");
         openButton.addActionListener(this);
         northPanel.add(openButton);
+        
+        ipTextField = new JTextField();
+        ipTextField.setColumns(10);
+        northPanel.add(ipTextField);
 
-        runButton = new Button("run");
+        runButton = new JButton("run");
         runButton.setEnabled(false);
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (init("10.6.18.33", 502)) {
+//                    if (init("10.6.18.33", 502)) {
+                    if (init(ipTextField.getText(), 502)) {  
                         for (Parameter param : parser.getParameterArray()) {
                             if (param.funcToRead == 3) {
                                 param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
@@ -125,7 +133,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             }
         });
         northPanel.add(runButton);
-        Button simpleTestButton = new Button("test");
+        JButton simpleTestButton = new JButton("test");
         simpleTestButton.setEnabled(false);
         simpleTestButton.addActionListener(new ActionListener() {
             @Override
@@ -164,6 +172,7 @@ public class ModbusTester extends JFrame implements ActionListener {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
                 runButton.setEnabled(true);
+                ipTextField.setText(parser.currentIP);
             }
         }
     }

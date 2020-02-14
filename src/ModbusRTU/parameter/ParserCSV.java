@@ -15,6 +15,7 @@ public class ParserCSV {
 
     private ArrayList<ArrayList<String>> myArray;
     private ArrayList<Parameter> parameterArray;
+    public String currentIP;
 
     public ArrayList<Parameter> getParameterArray() {
         return parameterArray;
@@ -23,6 +24,7 @@ public class ParserCSV {
     public ParserCSV(String s) {
         this.myArray = parse(s);
         this.parameterArray = arrayToParameters(this.myArray);
+        this.currentIP = myArray.get(1).get(1);
     }
 
     public ArrayList<ArrayList<String>> parse(String s) {
