@@ -52,7 +52,7 @@ public class ModbusTester extends JFrame implements ActionListener {
     DefaultTableModel tableModel;
     ParserCSV parser;
 
-    JButton openButton, runButton;
+    JButton openButton, readButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
 
@@ -110,7 +110,7 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }
             }
         
-        setSize(700, 400);
+        setSize(800, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         setLayout(new BorderLayout());
@@ -134,9 +134,9 @@ public class ModbusTester extends JFrame implements ActionListener {
             Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        runButton = new JButton("run");
-        runButton.setEnabled(false);
-        runButton.addActionListener(new ActionListener() {
+        readButton = new JButton("read");
+        readButton.setEnabled(false);
+        readButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -147,9 +147,11 @@ public class ModbusTester extends JFrame implements ActionListener {
                                 try {
                                     param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
                                     System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString());
+                                    param.readResult = "info was read, but haven't been checked";
                                     Thread.sleep(200);
                                 } catch (FuncException ex) {
                                     System.err.println(ex.getMessage());
+                                    param.readResult = "cannot read";
                                 }
                             } else {
                                 System.err.println(param.name + " reading impossible or haven't implemented yet");
@@ -162,10 +164,10 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }
             }
         });
-        northPanel.add(runButton);
-        JButton simpleTestButton = new JButton("test");
-        simpleTestButton.setEnabled(false);
-        simpleTestButton.addActionListener(new ActionListener() {
+        northPanel.add(readButton);
+        JButton writeButton = new JButton("write");
+        writeButton.setEnabled(false);
+        writeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int[] values = {0x1};
@@ -180,9 +182,9 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }
             }
         });
-        northPanel.add(simpleTestButton);
+        northPanel.add(writeButton);
         add(northPanel, BorderLayout.NORTH);
-        String[] colNames = {"parameter", "address", "value", "testResult"};
+        String[] colNames = {"parameter", "address", "value", "readResult", "writeResult"};
         tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(colNames);
         resultTable = new JTable(tableModel);
@@ -201,7 +203,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
-                runButton.setEnabled(true);
+                readButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
 //                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
 //                formattedTextField.setValue(parser.currentIP);

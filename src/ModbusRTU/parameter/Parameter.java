@@ -28,6 +28,9 @@ public class Parameter {
     public long value;
     public long minValue;
     public int[] resultArray;
+    
+    public String readResult = "param haven't been read";
+    public String writeResult = "haven't tried to write";
 
     public void setMaxValue(long maxValue) {
         this.maxValue = maxValue;
@@ -70,7 +73,7 @@ public class Parameter {
     }
 
     public Object[] toObjectArray() {
-        Object[] obj = {name, address, getValueString(), checkInterval()};
+        Object[] obj = {name, address, getValueString(), readResult, writeResult};
         return obj;
     }
 
