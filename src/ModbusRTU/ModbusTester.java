@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -97,6 +98,18 @@ public class ModbusTester extends JFrame implements ActionListener {
 
     public ModbusTester() {
         super("modbus tester");
+        
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    try {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                        Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        
         setSize(700, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
