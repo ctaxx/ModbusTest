@@ -25,9 +25,9 @@ public class Parameter {
     public short funcToWrite;
     public String dataType;
     public long maxValue;
-    public long value;
+//    public long value;
     public long minValue;
-    public int[] resultArray;
+//    public int[] resultArray;
     
     public String readResult = "param haven't been read";
     public String writeResult = "haven't tried to write";
@@ -40,10 +40,10 @@ public class Parameter {
         this.minValue = minValue;
     }
     
-    public void setResultArray(int [] resultArray){
-        this.resultArray = resultArray;
-        this.value = collectDataToLong(this.resultArray);
-    }
+//    public void setResultArray(int [] resultArray){
+//        this.resultArray = resultArray;
+//        this.value = collectDataToLong(this.resultArray);
+//    }
     
     public void setFuncToRead(String funcToRead) {
         if (funcToRead.equals("-")) {
@@ -72,14 +72,14 @@ public class Parameter {
                 + " dataType:" + dataType;
     }
 
-    public Object[] toObjectArray() {
-        Object[] obj = {name, address, getValueString(), readResult, writeResult};
-        return obj;
-    }
+//    public Object[] toObjectArray() {
+//        Object[] obj = {name, address, getValueString(), readResult, writeResult};
+//        return obj;
+//    }
 
-    public boolean checkInterval() {
-        return resultArray != null;
-    }
+//    public boolean checkInterval() {
+//        return resultArray != null;
+//    }
 
     protected int dataArrayToInt(int[] dataArray) {
         int res = 0;
@@ -93,7 +93,7 @@ public class Parameter {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
 
-    public String getValueString() {
-        return Long.toString(this.value);
+    public String getValueString(int [] dataArray) {
+        return Long.toString(collectDataToLong(dataArray));
     }
 }

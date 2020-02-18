@@ -139,15 +139,17 @@ public class ModbusTester extends JFrame implements ActionListener {
         readButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int [] dataArray = null;
                 try {
 //                    if (init("10.6.18.33", 502)) {
                     if (init(ipTextField.getText(), 502)) {
                         for (Parameter param : parser.getParameterArray()) {
                             if (param.funcToRead == 3) {
                                 try {
-                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
-                                    System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString());
-                                    param.readResult = "info was read, but haven't been checked";
+//                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
+                                    dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+                                    System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
+                                    param.readResult = "data was read, but haven't been checked";
                                     Thread.sleep(200);
                                 } catch (FuncException ex) {
                                     System.err.println(ex.getMessage());
@@ -156,7 +158,9 @@ public class ModbusTester extends JFrame implements ActionListener {
                             } else {
                                 System.err.println(param.name + " reading impossible or haven't implemented yet");
                             }
-                            tableModel.addRow(param.toObjectArray());
+                            Object obj[] = {param.name, param.address, param.getValueString(dataArray), param.readResult, param.writeResult}; 
+//                            tableModel.addRow(param.toObjectArray());
+                            tableModel.addRow(obj);
                         }
                     }
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {

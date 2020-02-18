@@ -16,9 +16,9 @@ import java.util.TimeZone;
 public class DateTime32Parameter extends Parameter {
 
     @Override
-    public String getValueString() {
-        if (resultArray != null) {
-            long secondsFrom2000 = collectDataToLong(resultArray);
+    public String getValueString(int [] dataArray) {
+//        if (resultArray != null) {
+            long secondsFrom2000 = collectDataToLong(dataArray);
             GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
             calendar.set(2000, 0, 1, 0, 0, 0);
             int minutes = (int) secondsFrom2000 / 60;
@@ -27,8 +27,8 @@ public class DateTime32Parameter extends Parameter {
             calendar.add(GregorianCalendar.SECOND, seconds);
             Instant instant = calendar.toInstant();
             return instant.toString();
-        }
-        return null;
+//        }
+//        return null;
     }
 
 }

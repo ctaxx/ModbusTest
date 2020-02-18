@@ -17,8 +17,8 @@ public class EnumParameter extends Parameter {
         this.minValue = 0;
     }
 
-    @Override
-    public boolean checkInterval() {
-        return (value >= minValue && value <= maxValue && resultArray != null);
-    }
+//    @Override
+//    public boolean checkInterval() {
+//        return (value >= minValue && value <= maxValue && resultArray != null);
+//    }
 }
