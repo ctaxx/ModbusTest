@@ -139,11 +139,11 @@ public class ModbusTester extends JFrame implements ActionListener {
         readButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int [] dataArray = null;
                 try {
 //                    if (init("10.6.18.33", 502)) {
                     if (init(ipTextField.getText(), 502)) {
                         for (Parameter param : parser.getParameterArray()) {
+                           int [] dataArray = null; 
                             if (param.funcToRead == 3) {
                                 try {
 //                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));

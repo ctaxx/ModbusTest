@@ -6,7 +6,6 @@
 package ModbusRTU.parameter;
 
 //import lombok.Builder;
-
 /**
  *
  * @author s.bikov
@@ -28,23 +27,22 @@ public class Parameter {
 //    public long value;
     public long minValue;
 //    public int[] resultArray;
-    
+
     public String readResult = "param haven't been read";
     public String writeResult = "haven't tried to write";
 
     public void setMaxValue(long maxValue) {
         this.maxValue = maxValue;
     }
-    
+
     public void setMinValue(long minValue) {
         this.minValue = minValue;
     }
-    
+
 //    public void setResultArray(int [] resultArray){
 //        this.resultArray = resultArray;
 //        this.value = collectDataToLong(this.resultArray);
 //    }
-    
     public void setFuncToRead(String funcToRead) {
         if (funcToRead.equals("-")) {
             this.funcToRead = 0;
@@ -60,7 +58,7 @@ public class Parameter {
             this.funcToWrite = Short.parseShort(funcToWrite);
         }
     }
-    
+
     @Override
     public String toString() {
         return name
@@ -76,11 +74,9 @@ public class Parameter {
 //        Object[] obj = {name, address, getValueString(), readResult, writeResult};
 //        return obj;
 //    }
-
 //    public boolean checkInterval() {
 //        return resultArray != null;
 //    }
-
     protected int dataArrayToInt(int[] dataArray) {
         int res = 0;
         for (int i = 0; i < dataArray.length; i++) {
@@ -93,7 +89,11 @@ public class Parameter {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
 
-    public String getValueString(int [] dataArray) {
-        return Long.toString(collectDataToLong(dataArray));
+    public String getValueString(int[] dataArray) {
+        if (dataArray != null) {
+            return Long.toString(collectDataToLong(dataArray));
+        } else {
+            return "-";
+        }
     }
 }
