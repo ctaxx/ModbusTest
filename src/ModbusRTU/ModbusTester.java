@@ -149,7 +149,7 @@ public class ModbusTester extends JFrame implements ActionListener {
 //                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
                                     dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
                                     System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
-                                    param.readResult = "data was read, but haven't been checked";
+                                    param.readResult = "R+ CH0";
                                     Thread.sleep(200);
                                 } catch (FuncException ex) {
                                     System.err.println(ex.getMessage());

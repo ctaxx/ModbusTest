@@ -28,8 +28,8 @@ public class Parameter {
     public long minValue;
 //    public int[] resultArray;
 
-    public String readResult = "param haven't been read";
-    public String writeResult = "haven't tried to write";
+    public String readResult = "R0 CH0";
+    public String writeResult = "W0";
 
     public void setMaxValue(long maxValue) {
         this.maxValue = maxValue;
