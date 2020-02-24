@@ -28,7 +28,7 @@ public class Parameter {
     public long minValue;
 //    public int[] resultArray;
 
-    public String readResult = "R0 CH0";
+    public String readResult = "R0 Ch0";
     public String writeResult = "W0";
 
     public void setMaxValue(long maxValue) {
@@ -74,9 +74,9 @@ public class Parameter {
 //        Object[] obj = {name, address, getValueString(), readResult, writeResult};
 //        return obj;
 //    }
-//    public boolean checkInterval() {
-//        return resultArray != null;
-//    }
+    public void checkInterval(int [] dataArray) {
+        
+    }
     protected int dataArrayToInt(int[] dataArray) {
         int res = 0;
         for (int i = 0; i < dataArray.length; i++) {
@@ -88,7 +88,7 @@ public class Parameter {
     protected long collectDataToLong(int[] dataArray) {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
-
+    
     public String getValueString(int[] dataArray) {
         if (dataArray != null) {
             return Long.toString(collectDataToLong(dataArray));

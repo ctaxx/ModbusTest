@@ -84,18 +84,6 @@ public class ModbusTester extends JFrame implements ActionListener {
         return success;
     }
 
-    public void writeFunc16(Parameter param, int[] values) {
-        try {
-            modbusClient.WriteMultipleRegisters(param.address, values);
-        } catch (ModbusException | SerialPortException | SerialPortTimeoutException ex) {
-            Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException ex) {
-            Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public ModbusTester() {
         super("modbus tester");
         
@@ -149,7 +137,8 @@ public class ModbusTester extends JFrame implements ActionListener {
 //                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
                                     dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
                                     System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
-                                    param.readResult = "R+ CH0";
+                                    param.readResult = "R+ Ch0";
+                                    param.checkInterval(dataArray);
                                     Thread.sleep(200);
                                 } catch (FuncException ex) {
                                     System.err.println(ex.getMessage());
@@ -177,6 +166,8 @@ public class ModbusTester extends JFrame implements ActionListener {
                 int[] values = {0x1};
                 try {
                     modbusClient.WriteMultipleRegisters(96, values);
+                }catch (FuncException ex){
+                    System.err.println(ex.getMessage());
                 } catch (ModbusException | SerialPortException | SerialPortTimeoutException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (SocketException ex) {

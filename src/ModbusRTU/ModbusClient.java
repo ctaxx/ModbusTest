@@ -1944,7 +1944,7 @@ public class ModbusClient {
      * @throws SerialPortException
      */
     public void WriteMultipleRegisters(int startingAddress, int[] values) throws de.re.easymodbus.exceptions.ModbusException,
-            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException {
+            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         byte byteCount = (byte) (values.length * 2);
         byte[] quantityOfOutputs = toByteArray((int) values.length);
         if (tcpClientSocket == null & !udpFlag) {
@@ -2050,18 +2050,22 @@ public class ModbusClient {
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x01) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x01) {
             System.err.println("FunctionCodeNotSupportedException Throwed");
+            throw new FuncException("FunctionCodeNotSupportedException Throwed");
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x02) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x02) {
             System.err.println("Starting adress invalid or starting adress + quantity invalid");
+            throw new FuncException("Starting adress invalid or starting adress + quantity invalid");
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x03) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x03) {
             System.err.println("Quantity invalid");
+            throw new FuncException("Quantity invalid");
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x04) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x04) {
             System.err.println("Error reading");
+            throw new FuncException("Error reading");
         }
     }
 
