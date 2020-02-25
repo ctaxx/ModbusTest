@@ -109,30 +109,29 @@ public class ParserCSV {
             String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
                 param = new UnsignedParameter();
+//            temporary stub                
+                param.setFuncToWrite("-");
             } else if (dataType.contains("Enum")) {
                 param = new EnumParameter();
                 param.setMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
+//            temporary stub
+                param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("Date time")) {
                 param = new DateTime32Parameter();
+//            temporary stub
+                param.setFuncToWrite("-");
             } else {
                 param = new Parameter();
+//            temporary stub                
+                param.setFuncToWrite("-");
             }
 
-//            Parameter param = new EnumParameter.ParameterBuilder()
-//                    .name(myArray.get(i).get(0))
-//                    .comment(myArray.get(i).get(1))
-//                    .address(Integer.parseInt(myArray.get(i).get(2)))
-//                    .numOfRegs(Short.parseShort(myArray.get(i).get(4)))
-//                    .funcToRead(Short.parseShort(myArray.get(i).get(5)))
-//                    .funcToWrite(Short.parseShort(myArray.get(i).get(6)))
-//                    .dataType(myArray.get(i).get(7))
-//                    .build();
             param.name = myArray.get(i).get(0);
             param.comment = myArray.get(i).get(1);
             param.address = Integer.parseInt(myArray.get(i).get(2));
             param.numOfRegs = Short.parseShort(myArray.get(i).get(4));
             param.setFuncToRead(myArray.get(i).get(5));
-            param.setFuncToWrite(myArray.get(i).get(6));
+//            param.setFuncToWrite(myArray.get(i).get(6));
             param.dataType = myArray.get(i).get(7);
             parametersArrayList.add(param);
         }

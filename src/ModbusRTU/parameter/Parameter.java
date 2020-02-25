@@ -96,4 +96,9 @@ public class Parameter {
             return "-";
         }
     }
+    
+    public int [] getValidValue(){
+        int [] ia = {0x1};
+        return ia;
+    }
 }

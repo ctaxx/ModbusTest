@@ -10,16 +10,13 @@ import ModbusRTU.parameter.Parameter;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.BorderLayout;
 //import de.re.easymodbus.modbusclient.ModbusClient;
-import java.awt.Button;
-import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -52,7 +49,7 @@ public class ModbusTester extends JFrame implements ActionListener {
     DefaultTableModel tableModel;
     ParserCSV parser;
 
-    JButton openButton, readButton;
+    JButton openButton, readButton, writeButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
 
@@ -86,18 +83,18 @@ public class ModbusTester extends JFrame implements ActionListener {
 
     public ModbusTester() {
         super("modbus tester");
-        
+
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    try {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                        Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            if ("Nimbus".equals(info.getName())) {
+                try {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        
+        }
+
         setSize(800, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -131,10 +128,9 @@ public class ModbusTester extends JFrame implements ActionListener {
 //                    if (init("10.6.18.33", 502)) {
                     if (init(ipTextField.getText(), 502)) {
                         for (Parameter param : parser.getParameterArray()) {
-                           int [] dataArray = null; 
+                            int[] dataArray = null;
                             if (param.funcToRead == 3) {
                                 try {
-//                                    param.setResultArray(modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs));
                                     dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
                                     System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
                                     param.readResult = "R+ Ch0";
@@ -147,9 +143,6 @@ public class ModbusTester extends JFrame implements ActionListener {
                             } else {
                                 System.err.println(param.name + " reading impossible or haven't implemented yet");
                             }
-                            Object obj[] = {param.name, param.address, param.getValueString(dataArray), param.readResult, param.writeResult}; 
-//                            tableModel.addRow(param.toObjectArray());
-                            tableModel.addRow(obj);
                         }
                     }
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
@@ -158,20 +151,29 @@ public class ModbusTester extends JFrame implements ActionListener {
             }
         });
         northPanel.add(readButton);
-        JButton writeButton = new JButton("write");
+        writeButton = new JButton("write");
         writeButton.setEnabled(false);
         writeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int[] values = {0x1};
                 try {
-                    modbusClient.WriteMultipleRegisters(96, values);
-                }catch (FuncException ex){
-                    System.err.println(ex.getMessage());
-                } catch (ModbusException | SerialPortException | SerialPortTimeoutException ex) {
+                    for (Parameter param : parser.getParameterArray()) {
+                        if (param.funcToWrite != 0) {
+                            try {
+                                System.out.println("going to write param " + param.name);
+                                modbusClient.WriteMultipleRegisters(param.address, param.getValidValue());
+                                param.writeResult = "W+";
+                                Thread.sleep(200);
+                            } catch (FuncException ex) {
+                                System.err.println(ex.getMessage());
+                                param.writeResult = "W-";
+                            }
+                        }
+                    }
+
+                } catch (ModbusException | SerialPortException | SerialPortTimeoutException | SocketException | InterruptedException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SocketException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+
                 } catch (IOException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -179,7 +181,7 @@ public class ModbusTester extends JFrame implements ActionListener {
         });
         northPanel.add(writeButton);
         add(northPanel, BorderLayout.NORTH);
-        String[] colNames = {"parameter", "address", "value", "readResult", "writeResult"};
+        String[] colNames = {"parameter", "address", "readResult", "writeResult"};
         tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(colNames);
         resultTable = new JTable(tableModel);
@@ -199,10 +201,34 @@ public class ModbusTester extends JFrame implements ActionListener {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
                 readButton.setEnabled(true);
+                writeButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
 //                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
 //                formattedTextField.setValue(parser.currentIP);
 
+                for (Parameter param: parser.getParameterArray()){
+                    Object obj[] = {param.name, param.address, param.readResult, param.writeResult};
+                    tableModel.addRow(obj);
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<Parameter> tmpArray;
+                        while(true){
+                            try {
+                                tmpArray = parser.getParameterArray();
+                                for(int i=0; i< tmpArray.size(); i++){
+                                tableModel.setValueAt(tmpArray.get(i).readResult, i, 2);
+                                tableModel.setValueAt(tmpArray.get(i).writeResult, i, 3);
+                                }
+                                Thread.sleep(200);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }).start();
             }
         }
     }
