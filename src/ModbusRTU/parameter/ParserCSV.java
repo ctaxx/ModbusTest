@@ -30,7 +30,7 @@ public class ParserCSV {
     public ArrayList<ArrayList<String>> parse(String s) {
         ArrayList<ArrayList<String>> yArrayList = new ArrayList<>();
 
-        String[] arrayOfStrings = s.split("\n");
+        String[] arrayOfStrings = s.split("\r\n");
 
         for (int i = 0; i < arrayOfStrings.length; i++) {
             String[] arrayOfColumns = arrayOfStrings[i].split(";");
