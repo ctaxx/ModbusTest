@@ -42,21 +42,21 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
  * @author s.bikov
  */
 public class ModbusTester extends JFrame implements ActionListener {
-
+    
     ModbusClient modbusClient;
-
+    
     JTable resultTable;
     DefaultTableModel tableModel;
     ParserCSV parser;
-
+    
     JButton openButton, readButton, writeButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
-
+    
     public static void main(String[] args) {
         new ModbusTester();
     }
-
+    
     public boolean init(String ip, int port) throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttPersistenceException, MqttException, InterruptedException {
         modbusClient = new ModbusClient(ip, port);
         boolean success = modbusClient.Available(2500);
@@ -80,10 +80,10 @@ public class ModbusTester extends JFrame implements ActionListener {
 //         }
         return success;
     }
-
+    
     public ModbusTester() {
         super("modbus tester");
-
+        
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
             if ("Nimbus".equals(info.getName())) {
                 try {
@@ -94,23 +94,23 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }
             }
         }
-
+        
         setSize(800, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        
         setLayout(new BorderLayout());
-
+        
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
-
+        
         openButton = new JButton("open");
         openButton.addActionListener(this);
         northPanel.add(openButton);
-
+        
         ipTextField = new JTextField();
         ipTextField.setColumns(9);
         northPanel.add(ipTextField);
-
+        
         try {
             MaskFormatter mf = new MaskFormatter("##.#.##.##");
             formattedTextField = new JFormattedTextField(mf);
@@ -118,7 +118,7 @@ public class ModbusTester extends JFrame implements ActionListener {
         } catch (ParseException ex) {
             Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         readButton = new JButton("read");
         readButton.setEnabled(false);
         readButton.addActionListener(new ActionListener() {
@@ -170,10 +170,10 @@ public class ModbusTester extends JFrame implements ActionListener {
                             }
                         }
                     }
-
+                    
                 } catch (ModbusException | SerialPortException | SerialPortTimeoutException | SocketException | InterruptedException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-
+                    
                 } catch (IOException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -188,7 +188,7 @@ public class ModbusTester extends JFrame implements ActionListener {
         add(new JScrollPane(resultTable), BorderLayout.CENTER);
         setVisible(true);
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == openButton) {
@@ -196,7 +196,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             JFileChooser fileDialog = new JFileChooser("D:/");
             fileDialog.setFileFilter(filter);
             int ret = fileDialog.showDialog(this, "Open");
-
+            
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
@@ -206,21 +206,23 @@ public class ModbusTester extends JFrame implements ActionListener {
 //                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
 //                formattedTextField.setValue(parser.currentIP);
 
-                for (Parameter param: parser.getParameterArray()){
+                tableModel.setRowCount(0);
+                
+                for (Parameter param : parser.getParameterArray()) {
                     Object obj[] = {param.name, param.address, param.readResult, param.writeResult};
                     tableModel.addRow(obj);
                 }
-
+                
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         ArrayList<Parameter> tmpArray;
-                        while(true){
+                        while (true) {
                             try {
                                 tmpArray = parser.getParameterArray();
-                                for(int i=0; i< tmpArray.size(); i++){
-                                tableModel.setValueAt(tmpArray.get(i).readResult, i, 2);
-                                tableModel.setValueAt(tmpArray.get(i).writeResult, i, 3);
+                                for (int i = 0; i < tmpArray.size(); i++) {
+                                    tableModel.setValueAt(tmpArray.get(i).readResult, i, 2);
+                                    tableModel.setValueAt(tmpArray.get(i).writeResult, i, 3);
                                 }
                                 Thread.sleep(200);
                             } catch (InterruptedException ex) {
