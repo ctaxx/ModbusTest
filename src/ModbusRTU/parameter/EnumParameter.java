@@ -24,4 +24,11 @@ public class EnumParameter extends Parameter {
             this.readResult = "R+ Ch+";
         }
     }
+    
+    @Override
+    public int [] getOutOfRangeValue(){
+        int i = (int)this.maxValue + 1;
+        int ia [] = {i};
+        return ia;
+    }
 }

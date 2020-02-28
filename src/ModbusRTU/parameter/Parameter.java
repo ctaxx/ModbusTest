@@ -101,4 +101,9 @@ public class Parameter {
         int [] ia = {0x1};
         return ia;
     }
+    
+    public int [] getOutOfRangeValue(){
+        int [] ia = {0xA};
+        return ia;
+    }
 }
