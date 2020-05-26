@@ -49,7 +49,7 @@ public class ModbusTester extends JFrame implements ActionListener {
     DefaultTableModel tableModel;
     ParserCSV parser;
 
-    JButton openButton, readButton, writeButton, writeOutOfRangeButton;
+    JButton openButton, readButton, writeButton, writeOutOfRangeButton, saveButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
 
@@ -231,6 +231,15 @@ public class ModbusTester extends JFrame implements ActionListener {
             }
         });
         northPanel.add(writeOutOfRangeButton);
+        saveButton = new JButton("save");
+        saveButton.setEnabled(false);
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveStatus();
+            }
+        });
+        northPanel.add(saveButton);
         add(northPanel, BorderLayout.NORTH);
         String[] colNames = {"parameter", "address", "readResult", "writeResult"};
         tableModel = new DefaultTableModel();
@@ -258,6 +267,7 @@ public class ModbusTester extends JFrame implements ActionListener {
                 readButton.setEnabled(true);
                 writeButton.setEnabled(true);
                 writeOutOfRangeButton.setEnabled(true);
+                saveButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
 //                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
 //                formattedTextField.setValue(parser.currentIP);
@@ -289,5 +299,9 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }).start();
             }
         }
+    }
+    
+    public void saveStatus(){
+        
     }
 }
