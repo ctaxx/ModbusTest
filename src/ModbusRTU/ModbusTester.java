@@ -126,25 +126,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 try {
 //                    if (init("10.6.18.33", 502)) {
-                    if (init(ipTextField.getText(), 502)) {
-                        for (Parameter param : parser.getParameterArray()) {
-                            int[] dataArray = null;
-                            if (param.funcToRead == 3) {
-                                try {
-                                    dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-                                    System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
-                                    param.readResult = "R+ Ch0";
-                                    param.checkInterval(dataArray);
-                                    Thread.sleep(200);
-                                } catch (FuncException ex) {
-                                    System.err.println(ex.getMessage());
-                                    param.readResult = "cannot read";
-                                }
-                            } else {
-                                System.err.println(param.name + " reading impossible or haven't implemented yet");
-                            }
-                        }
-                    }
+                    readParams();
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -300,8 +282,30 @@ public class ModbusTester extends JFrame implements ActionListener {
             }
         }
     }
-    
-    public void saveStatus(){
-        
+
+    public void readParams() throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttException, MqttPersistenceException, InterruptedException {
+        if (init(ipTextField.getText(), 502)) {
+            for (Parameter param : parser.getParameterArray()) {
+                int[] dataArray = null;
+                if (param.funcToRead == 3) {
+                    try {
+                        dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+                        System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
+                        param.readResult = "R+ Ch0";
+                        param.checkInterval(dataArray);
+                        Thread.sleep(200);
+                    } catch (FuncException ex) {
+                        System.err.println(ex.getMessage());
+                        param.readResult = "cannot read";
+                    }
+                } else {
+                    System.err.println(param.name + " reading impossible or haven't implemented yet");
+                }
+            }
+        }
+    }
+
+    public void saveStatus() {
+
     }
 }
