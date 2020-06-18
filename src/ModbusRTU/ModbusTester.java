@@ -49,7 +49,7 @@ public class ModbusTester extends JFrame implements ActionListener {
     DefaultTableModel tableModel;
     ParserCSV parser;
 
-    JButton openButton, readButton, writeButton, writeOutOfRangeButton, saveButton;
+    JButton openButton, testButton, readButton, writeButton, writeOutOfRangeButton, saveButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
 
@@ -118,6 +118,25 @@ public class ModbusTester extends JFrame implements ActionListener {
         } catch (ParseException ex) {
             Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        testButton = new JButton("test");
+        testButton.setEnabled(false);
+        testButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (init(ipTextField.getText(), 502)) {
+                        for (Parameter param : parser.getParameterArray()) {
+                            int [] initialDataArray
+                            tryToReadParam();
+                        }
+                    }
+                } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex ) {
+                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        northPanel.add(testButton);
 
         readButton = new JButton("read");
         readButton.setEnabled(false);
@@ -133,6 +152,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             }
         });
         northPanel.add(readButton);
+        
         writeButton = new JButton("write");
         writeButton.setEnabled(false);
         writeButton.addActionListener(new ActionListener() {
@@ -246,6 +266,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
+                testButton.setEnabled(true);
                 readButton.setEnabled(true);
                 writeButton.setEnabled(true);
                 writeOutOfRangeButton.setEnabled(true);
@@ -303,6 +324,14 @@ public class ModbusTester extends JFrame implements ActionListener {
                 }
             }
         }
+    }
+    
+    public void tryToReadParam(){
+        
+    }
+    
+    public void tryToWriteParam(){
+        
     }
 
     public void saveStatus() {
