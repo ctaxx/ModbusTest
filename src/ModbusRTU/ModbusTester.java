@@ -64,20 +64,7 @@ public class ModbusTester extends JFrame implements ActionListener {
         if (success) {
             modbusClient.Connect();
         }
-
-//        int[] resultArray;
-//         while (true)
-//         {
-//        	 System.out.println(modbusClient.ReadInputRegisters(0, 10)[5]);
-//               System.out.println(modbusClient.ReadHoldingRegisters(61440, 10));
-//        resultArray = modbusClient.ReadHoldingRegisters(7777, 1);
-//        for (int i : resultArray) {
-//            System.out.println(i);
-//        }
-//        System.out.println();
-//        resultArray = modbusClient.ReadHoldingRegisters(160, 2);
         Thread.sleep(2000);
-//         }
         return success;
     }
 
@@ -127,8 +114,19 @@ public class ModbusTester extends JFrame implements ActionListener {
                 try {
                     if (init(ipTextField.getText(), 502)) {
                         for (Parameter param : parser.getParameterArray()) {
-                            int [] initialDataArray
-                            tryToReadParam();
+                            int [] initialDataArray = tryToReadParam(param);
+                            checkParam(param);
+                            tryToWriteParam(param, param.getValidValue());
+                            checkParam(param);
+                            tryToWriteParam(param, param.getValidValue());
+                            checkParam(param);
+                            tryToWriteParam(param, param.getValidValue());
+                            checkParam(param);
+                            tryToWriteOutOfRangeParam(param, param.getOutOfRangeValue());
+                            checkParam(param);
+                            tryToWriteOutOfRangeParam(param, param.getOutOfRangeValue());
+                            checkParam(param);
+                            tryToWriteParam(param, initialDataArray);
                         }
                     }
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex ) {
@@ -145,7 +143,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 try {
 //                    if (init("10.6.18.33", 502)) {
-                    readParams();
+                    readParam();
                 } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
                     Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -304,7 +302,7 @@ public class ModbusTester extends JFrame implements ActionListener {
         }
     }
 
-    public void readParams() throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttException, MqttPersistenceException, InterruptedException {
+    public void readParam() throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttException, MqttPersistenceException, InterruptedException {
         if (init(ipTextField.getText(), 502)) {
             for (Parameter param : parser.getParameterArray()) {
                 int[] dataArray = null;
@@ -326,12 +324,25 @@ public class ModbusTester extends JFrame implements ActionListener {
         }
     }
     
-    public void tryToReadParam(){
+    public int[] tryToReadParam(Parameter param){
+//        have to write result to param
+        return null;
+    }
+    
+    public void tryToWriteParam(Parameter param, int[] value){
+//        have to write result to param
+        if (param.funcToWrite != 0) {
+            
+        }
+    }
+    
+    public void tryToWriteOutOfRangeParam(Parameter param, int [] value){
+//        have to write result to param
         
     }
     
-    public void tryToWriteParam(){
-        
+    public void checkParam(Parameter param){
+//        unclear if we need this function
     }
 
     public void saveStatus() {

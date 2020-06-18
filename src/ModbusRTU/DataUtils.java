@@ -5,14 +5,8 @@
  */
 package ModbusRTU;
 
-import com.sun.javafx.css.converters.DurationConverter;
 import static de.re.easymodbus.modbusclient.ModbusClient.toByteArrayLong;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  *
