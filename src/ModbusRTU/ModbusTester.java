@@ -7,14 +7,10 @@ package ModbusRTU;
 
 import ModbusRTU.parameter.ParserCSV;
 import ModbusRTU.parameter.Parameter;
-import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.BorderLayout;
-//import de.re.easymodbus.modbusclient.ModbusClient;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.SocketException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -32,10 +28,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
-import jssc.SerialPortException;
-import jssc.SerialPortTimeoutException;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 
 /**
  *
@@ -43,11 +35,11 @@ import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
  */
 public class ModbusTester extends JFrame implements ActionListener {
 
-    ModbusClient modbusClient;
-
+    //   ModbusClient modbusClient;
     JTable resultTable;
     DefaultTableModel tableModel;
     ParserCSV parser;
+    ModbusTCPTester tester;
 
     JButton openButton, testButton, readButton, writeButton, writeOutOfRangeButton, saveButton;
     JTextField ipTextField;
@@ -55,17 +47,6 @@ public class ModbusTester extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         new ModbusTester();
-    }
-
-    public boolean init(String ip, int port) throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttPersistenceException, MqttException, InterruptedException {
-        modbusClient = new ModbusClient(ip, port);
-        boolean success = modbusClient.Available(2500);
-        System.out.println(success);
-        if (success) {
-            modbusClient.Connect();
-        }
-        Thread.sleep(2000);
-        return success;
     }
 
     public ModbusTester() {
@@ -101,142 +82,29 @@ public class ModbusTester extends JFrame implements ActionListener {
         try {
             MaskFormatter mf = new MaskFormatter("##.#.##.##");
             formattedTextField = new JFormattedTextField(mf);
-//            northPanel.add(formattedTextField);
         } catch (ParseException ex) {
             Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         testButton = new JButton("test");
         testButton.setEnabled(false);
         testButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if (init(ipTextField.getText(), 502)) {
-                        for (Parameter param : parser.getParameterArray()) {
-                            int [] initialDataArray = tryToReadParam(param);
-                            checkParam(param);
-                            tryToWriteParam(param, param.getValidValue());
-                            checkParam(param);
-                            tryToWriteParam(param, param.getValidValue());
-                            checkParam(param);
-                            tryToWriteParam(param, param.getValidValue());
-                            checkParam(param);
-                            tryToWriteOutOfRangeParam(param, param.getOutOfRangeValue());
-                            checkParam(param);
-                            tryToWriteOutOfRangeParam(param, param.getOutOfRangeValue());
-                            checkParam(param);
-                            tryToWriteParam(param, initialDataArray);
-                        }
-                    }
-                } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex ) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                tester = new ModbusTCPTester();
+                if (tester.init(ipTextField.getText(), 502)) {
+                    tester.test(parser.getParameterArray());
                 }
             }
         });
         northPanel.add(testButton);
 
-        readButton = new JButton("read");
-        readButton.setEnabled(false);
-        readButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-//                    if (init("10.6.18.33", 502)) {
-                    readParam();
-                } catch (IOException | SerialPortException | ModbusException | SerialPortTimeoutException | MqttException | InterruptedException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        northPanel.add(readButton);
-        
-        writeButton = new JButton("write");
-        writeButton.setEnabled(false);
-        writeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    for (Parameter param : parser.getParameterArray()) {
-                        if (param.funcToWrite != 0) {
-                            try {
-                                System.out.println("going to write valid data to param " + param.name);
-                                modbusClient.WriteMultipleRegisters(param.address, param.getValidValue());
-//                                temporary stub
-                                System.out.print("checkin' written value...");
-                                int[] dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-                                if (dataArray[0] == param.getValidValue()[0]) {
-                                    param.writeResult = "W+";
-                                }
-                                System.out.println("Ok");
-                                Thread.sleep(200);
-                            } catch (FuncException ex) {
-                                System.err.println(ex.getMessage());
-                                param.writeResult = "W-";
-                            }
-                        }
-                    }
-
-                } catch (ModbusException | SerialPortException | SerialPortTimeoutException | SocketException | InterruptedException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        northPanel.add(writeButton);
-
-        writeOutOfRangeButton = new JButton("writeOutOfRange");
-        writeOutOfRangeButton.setEnabled(false);
-        writeOutOfRangeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    for (Parameter param : parser.getParameterArray()) {
-                        if (param.funcToWrite != 0) {
-                            int[] tmpDataArray = null;
-                            try {
-                                tmpDataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-                                System.out.println();
-                                System.out.println("going to write wrong data " + param.getOutOfRangeValue()[0] + " to param " + param.address + " " + param.name);
-                                modbusClient.WriteMultipleRegisters(param.address, param.getOutOfRangeValue());
-
-                                System.out.println("Ok");
-
-                            } catch (FuncException ex) {
-                                System.err.print(ex.getMessage());
-                                System.err.println(" Expected exception was thrown - we cannot write wrong data");
-                            }
-                            try {
-                                //                                temporary stub
-                                System.out.print("checkin' written wrong value...");
-                                int[] dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-                                if (dataArray[0] == tmpDataArray[0]) {
-                                    System.out.println("wrong data wasn't written to param - Ok");
-                                }
-                            } catch (FuncException ex) {
-                                System.err.println(ex.getMessage());
-                            }
-                            Thread.sleep(200);
-                        }
-                    }
-
-                } catch (ModbusException | SerialPortException | SerialPortTimeoutException | SocketException | InterruptedException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        northPanel.add(writeOutOfRangeButton);
         saveButton = new JButton("save");
         saveButton.setEnabled(false);
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveStatus();
+//                saveStatus();
             }
         });
         northPanel.add(saveButton);
@@ -270,8 +138,6 @@ public class ModbusTester extends JFrame implements ActionListener {
                 writeOutOfRangeButton.setEnabled(true);
                 saveButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
-//                    formattedTextField.setValue(InetAddress.getByName(parser.currentIP));
-//                formattedTextField.setValue(parser.currentIP);
 
                 tableModel.setRowCount(0);
 
@@ -302,50 +168,4 @@ public class ModbusTester extends JFrame implements ActionListener {
         }
     }
 
-    public void readParam() throws IOException, SerialPortException, ModbusException, SerialPortTimeoutException, MqttException, MqttPersistenceException, InterruptedException {
-        if (init(ipTextField.getText(), 502)) {
-            for (Parameter param : parser.getParameterArray()) {
-                int[] dataArray = null;
-                if (param.funcToRead == 3) {
-                    try {
-                        dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
-                        System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
-                        param.readResult = "R+ Ch0";
-                        param.checkInterval(dataArray);
-                        Thread.sleep(200);
-                    } catch (FuncException ex) {
-                        System.err.println(ex.getMessage());
-                        param.readResult = "cannot read";
-                    }
-                } else {
-                    System.err.println(param.name + " reading impossible or haven't implemented yet");
-                }
-            }
-        }
-    }
-    
-    public int[] tryToReadParam(Parameter param){
-//        have to write result to param
-        return null;
-    }
-    
-    public void tryToWriteParam(Parameter param, int[] value){
-//        have to write result to param
-        if (param.funcToWrite != 0) {
-            
-        }
-    }
-    
-    public void tryToWriteOutOfRangeParam(Parameter param, int [] value){
-//        have to write result to param
-        
-    }
-    
-    public void checkParam(Parameter param){
-//        unclear if we need this function
-    }
-
-    public void saveStatus() {
-
-    }
 }
