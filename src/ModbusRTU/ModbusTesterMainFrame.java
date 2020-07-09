@@ -33,7 +33,7 @@ import javax.swing.text.MaskFormatter;
  *
  * @author s.bikov
  */
-public class ModbusTester extends JFrame implements ActionListener {
+public class ModbusTesterMainFrame extends JFrame implements ActionListener {
 
     //   ModbusClient modbusClient;
     JTable resultTable;
@@ -41,15 +41,15 @@ public class ModbusTester extends JFrame implements ActionListener {
     ParserCSV parser;
     ModbusTCPTester tester;
 
-    JButton openButton, testButton, readButton, writeButton, writeOutOfRangeButton, saveButton;
+    JButton openButton, testButton, saveButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
 
     public static void main(String[] args) {
-        new ModbusTester();
+        new ModbusTesterMainFrame();
     }
 
-    public ModbusTester() {
+    public ModbusTesterMainFrame() {
         super("modbus tester");
 
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -58,7 +58,7 @@ public class ModbusTester extends JFrame implements ActionListener {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ModbusTesterMainFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -83,7 +83,7 @@ public class ModbusTester extends JFrame implements ActionListener {
             MaskFormatter mf = new MaskFormatter("##.#.##.##");
             formattedTextField = new JFormattedTextField(mf);
         } catch (ParseException ex) {
-            Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ModbusTesterMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         testButton = new JButton("test");
@@ -124,18 +124,12 @@ public class ModbusTester extends JFrame implements ActionListener {
             JFileChooser fileDialog = new JFileChooser("D:/");
             fileDialog.setFileFilter(filter);
             int ret = fileDialog.showDialog(this, "Open");
-
-            readButton.setEnabled(false);
-            writeButton.setEnabled(false);
-            writeOutOfRangeButton.setEnabled(false);
-
-            if (ret == JFileChooser.APPROVE_OPTION) {
+            
+                       if (ret == JFileChooser.APPROVE_OPTION) {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
                 testButton.setEnabled(true);
-                readButton.setEnabled(true);
-                writeButton.setEnabled(true);
-                writeOutOfRangeButton.setEnabled(true);
+
                 saveButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
 
@@ -159,12 +153,13 @@ public class ModbusTester extends JFrame implements ActionListener {
                                 }
                                 Thread.sleep(200);
                             } catch (InterruptedException ex) {
-                                Logger.getLogger(ModbusTester.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(ModbusTesterMainFrame.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
                 }).start();
             }
+            
         }
     }
 
