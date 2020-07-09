@@ -21,7 +21,7 @@ public class EnumParameter extends Parameter {
     public void checkInterval(int[] dataArray) {
         long l = collectDataToLong(dataArray);
         if (l >= minValue && l <= maxValue) {
-            this.readResult = "R+ Ch+";
+//            this.readResult = "R+ Ch+";
         }
     }
     

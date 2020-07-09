@@ -24,9 +24,7 @@ public class Parameter {
     public short funcToWrite;
     public String dataType;
     public long maxValue;
-//    public long value;
     public long minValue;
-//    public int[] resultArray;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";
