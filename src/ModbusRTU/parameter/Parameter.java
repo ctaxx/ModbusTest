@@ -14,6 +14,7 @@ package ModbusRTU.parameter;
 public class Parameter {
 
 //    static final long MAX_UNSIGNED32_VALUE = Integer.MAX_VALUE * 2;
+    static final String MAX_UNSIGNED16_VALUE = "65535";
     static final String MAX_UNSIGNED32_VALUE = "4294967295";
 
     public String name;
@@ -25,6 +26,7 @@ public class Parameter {
     public String dataType;
     public long maxValue;
     public long minValue;
+    public String attribute;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";

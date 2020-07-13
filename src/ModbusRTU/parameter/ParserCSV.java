@@ -108,9 +108,8 @@ public class ParserCSV {
             Parameter param = null;
             String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
-                param = new UnsignedParameter();
-//            temporary stub                
-                param.setFuncToWrite("-");
+                param = new UnsignedParameter();              
+                param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("Enum")) {
                 param = new EnumParameter();
                 param.setMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
@@ -132,6 +131,14 @@ public class ParserCSV {
             param.numOfRegs = Short.parseShort(myArray.get(i).get(4));
             param.setFuncToRead(myArray.get(i).get(5));
 //            param.setFuncToWrite(myArray.get(i).get(6));
+            StringBuilder attrBuilder = new StringBuilder();
+            if (!myArray.get(i).get(5).contains("-")){
+                attrBuilder.append("R");
+            }
+            if (!myArray.get(i).get(6).contains("-")){
+                attrBuilder.append("W");
+            }
+            param.attribute = attrBuilder.toString();
             param.dataType = myArray.get(i).get(7);
             parametersArrayList.add(param);
         }

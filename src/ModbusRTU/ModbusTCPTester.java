@@ -60,9 +60,9 @@ public class ModbusTCPTester {
         for (Parameter param : array) {
 //            if (param.address == 235) {
             resultString.append("<tr>");
-            resultString.append("<td>" + param.name + "</td>");
-            resultString.append("<td>" + param.address + "</td>");
-            resultString.append("<td>" + "attribute" + "</td>");   //attribute must be here
+            resultString.append("<td>").append(param.name).append("</td>");
+            resultString.append("<td>").append(param.address).append("</td>");
+            resultString.append("<td>").append(param.attribute).append("</td>");  
             resultString.append("<td>" + "range" + "</td>");
 
             int[] initialDataArray = {0};
