@@ -31,4 +31,9 @@ public class EnumParameter extends Parameter {
         int ia [] = {i};
         return ia;
     }
+    
+    @Override
+    public String getRange(){
+        return minValue + ".."+ maxValue;
+    }
 }

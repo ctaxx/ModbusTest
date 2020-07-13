@@ -27,7 +27,7 @@ public class Parameter {
     public long maxValue;
     public long minValue;
     public String attribute;
-    
+
     public int logicalMinValue;
     public int logicalMaxValue;
 
@@ -77,9 +77,10 @@ public class Parameter {
 //        Object[] obj = {name, address, getValueString(), readResult, writeResult};
 //        return obj;
 //    }
-    public void checkInterval(int [] dataArray) {
-        
+    public void checkInterval(int[] dataArray) {
+
     }
+
     protected int dataArrayToInt(int[] dataArray) {
         int res = 0;
         for (int i = 0; i < dataArray.length; i++) {
@@ -91,7 +92,7 @@ public class Parameter {
     protected long collectDataToLong(int[] dataArray) {
         return Integer.toUnsignedLong(dataArrayToInt(dataArray));
     }
-    
+
     public String getValueString(int[] dataArray) {
         if (dataArray != null) {
             return Long.toString(collectDataToLong(dataArray));
@@ -99,14 +100,18 @@ public class Parameter {
             return "-";
         }
     }
-    
-    public int [] getValidValue(){
-        int [] ia = {0x1};
+
+    public int[] getValidValue() {
+        int[] ia = {0x1};
         return ia;
     }
-    
-    public int [] getOutOfRangeValue(){
-        int [] ia = {0xA};
+
+    public int[] getOutOfRangeValue() {
+        int[] ia = {0xA};
         return ia;
+    }
+
+    public String getRange() {
+        return "range";
     }
 }

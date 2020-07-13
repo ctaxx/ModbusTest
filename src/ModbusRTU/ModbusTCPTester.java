@@ -63,7 +63,7 @@ public class ModbusTCPTester {
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
             resultString.append("<td>").append(param.attribute).append("</td>");  
-            resultString.append("<td>" + "range" + "</td>");
+            resultString.append("<td>" + param.getRange() + "</td>");
 
             int[] initialDataArray = {0};
             try {
