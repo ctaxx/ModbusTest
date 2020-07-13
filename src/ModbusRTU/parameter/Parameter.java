@@ -27,6 +27,9 @@ public class Parameter {
     public long maxValue;
     public long minValue;
     public String attribute;
+    
+    public int logicalMinValue;
+    public int logicalMaxValue;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";
