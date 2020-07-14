@@ -60,7 +60,7 @@ public class DataUtilsTest {
         long l = 77777;
         int expResult[] = {0x1, 0x2FD1};
         int result [] = DataUtils.ConvertLongToRegisters(l);
-        assertEquals(expResult[1], result[1]);
+        assertEquals(expResult[0], result[0]);
     }
     
 }

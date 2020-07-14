@@ -5,15 +5,19 @@
  */
 package ModbusRTU.parameter;
 
+import ModbusRTU.DataUtils;
+
 /**
  *
  * @author bykov_sp
  */
 public class UnsignedParameter extends Parameter {
 
-    public UnsignedParameter(int size) {
-        this.physicalMinValue = 0;
-        switch (size) {
+    //physicalMinValue = 0;
+    
+    @Override
+    public void setPhysicalMaxValue(long size) {     
+        switch ((int)size) {
             case 8:
                 physicalMaxValue = 255L;
                 break;
@@ -26,6 +30,18 @@ public class UnsignedParameter extends Parameter {
             case 48:
                 break;
         }
+    }
+    
+    @Override
+    public String getRange(){
+        return logicalMinValue + ".." + logicalMaxValue;
+    }
+    
+    @Override
+    public int [] getValidValue(){
+        int[] ia = DataUtils.ConvertLongToRegisters(logicalMinValue + 3L);
+//        int[] ia = {0xA};
+        return ia;
     }
 
 }

@@ -58,12 +58,12 @@ public class ModbusTCPTester {
 
     public void test(ArrayList<Parameter> array) {
         for (Parameter param : array) {
-//            if (param.address == 235) {
+            if (param.address == 308) {
             resultString.append("<tr>");
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
             resultString.append("<td>").append(param.attribute).append("</td>");  
-            resultString.append("<td>" + param.getRange() + "</td>");
+            resultString.append("<td>").append(param.getRange()).append("</td>");
 
             int[] initialDataArray = {0};
             try {
@@ -83,8 +83,9 @@ public class ModbusTCPTester {
                         
             // writing valid value
             resultString.append("<td>");
-            int[] validValueToWrite = param.getValidValue();
+   
             if (param.funcToWrite == 16) {
+                int[] validValueToWrite = param.getValidValue();
                 resultString.append(param.getValueString(validValueToWrite));
                 resultString.append(" - ");
 
@@ -144,7 +145,7 @@ public class ModbusTCPTester {
                     Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+        }
         }
         resultString.append("</table></html>");
         System.out.println(resultString.toString());

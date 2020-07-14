@@ -28,20 +28,18 @@ public class DataUtils {
 
     public static int[] ConvertLongToRegisters(long longValue) {
         byte[] doubleBytes = toByteArrayLong(longValue);
-        byte[] highhighRegisterBytes
-                = {
-                    0, 0,
-                    doubleBytes[0],
-                    doubleBytes[1],};
-        byte[] highlowRegisterBytes
-                = {
-                    0, 0,
-                    doubleBytes[2],
-                    doubleBytes[3],};
+        byte[] highRegisterBytes
+                = {0, 0,
+                    doubleBytes[4],
+                    doubleBytes[5]};
+        byte[] lowRegisterBytes
+                = {0, 0,
+                    doubleBytes[6],
+                    doubleBytes[7]};
         int[] returnValue
                 = {
-                    ByteBuffer.wrap(highlowRegisterBytes).getInt(),
-                    ByteBuffer.wrap(highhighRegisterBytes).getInt()};
+                    ByteBuffer.wrap(lowRegisterBytes).getInt(),
+                    ByteBuffer.wrap(highRegisterBytes).getInt()};
         return returnValue;
     }
 }

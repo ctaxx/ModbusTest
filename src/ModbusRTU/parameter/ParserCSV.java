@@ -108,13 +108,17 @@ public class ParserCSV {
             Parameter param = null;
             String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
-                param = new UnsignedParameter(Integer.parseInt(dataType.replaceAll("\\D", "")));   
+                param = new UnsignedParameter();   
+                param.setPhysicalMaxValue(Integer.parseInt(dataType.replaceAll("\\D", "")));
+                
                 param.setFuncToWrite(myArray.get(i).get(6));
+                
                 if (myArray.get(i).get(8).matches("\\D")){
                     param.setLogicalMinValue(param.getPhysicalMinValue());
                 }else{
                     param.setLogicalMinValue(Long.parseLong(myArray.get(i).get(8)));
                 }
+                
                 if (myArray.get(i).get(9).matches("\\D")){
                     param.setLogicalMaxValue(param.getPhysicalMaxValue());
                 }else{
