@@ -108,11 +108,22 @@ public class ParserCSV {
             Parameter param = null;
             String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
-                param = new UnsignedParameter();              
+                param = new UnsignedParameter(Integer.parseInt(dataType.replaceAll("\\D", "")));   
                 param.setFuncToWrite(myArray.get(i).get(6));
+                if (myArray.get(i).get(8).matches("\\D")){
+                    param.setLogicalMinValue(param.getPhysicalMinValue());
+                }else{
+                    param.setLogicalMinValue(Long.parseLong(myArray.get(i).get(8)));
+                }
+                if (myArray.get(i).get(9).matches("\\D")){
+                    param.setLogicalMaxValue(param.getPhysicalMaxValue());
+                }else{
+                    param.setLogicalMaxValue(Long.parseLong(myArray.get(i).get(9)));
+                }
+                
             } else if (dataType.contains("Enum")) {
                 param = new EnumParameter();
-                param.setMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
+                param.setPhysicalMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
 //            temporary stub
                 param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("Date time")) {
@@ -132,10 +143,10 @@ public class ParserCSV {
             param.setFuncToRead(myArray.get(i).get(5));
 //            param.setFuncToWrite(myArray.get(i).get(6));
             StringBuilder attrBuilder = new StringBuilder();
-            if (!myArray.get(i).get(5).contains("-")){
+            if (!myArray.get(i).get(5).contains("-")) {
                 attrBuilder.append("R");
             }
-            if (!myArray.get(i).get(6).contains("-")){
+            if (!myArray.get(i).get(6).contains("-")) {
                 attrBuilder.append("W");
             }
             param.attribute = attrBuilder.toString();

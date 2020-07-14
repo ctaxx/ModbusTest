@@ -14,7 +14,7 @@ package ModbusRTU.parameter;
 public class Parameter {
 
 //    static final long MAX_UNSIGNED32_VALUE = Integer.MAX_VALUE * 2;
-    static final String MAX_UNSIGNED16_VALUE = "65535";
+    static final String MAX_UNSIGNED16_VALUE = "";
     static final String MAX_UNSIGNED32_VALUE = "4294967295";
 
     public String name;
@@ -24,22 +24,47 @@ public class Parameter {
     public short funcToRead;
     public short funcToWrite;
     public String dataType;
-    public long maxValue;
-    public long minValue;
+    public long physicalMaxValue;
+    public long physicalMinValue;
+    
+    public long logicalMinValue;
+    public long logicalMaxValue;
+    
     public String attribute;
-
-    public int logicalMinValue;
-    public int logicalMaxValue;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";
 
-    public void setMaxValue(long maxValue) {
-        this.maxValue = maxValue;
+    public void setPhysicalMaxValue(long physicalMaxValue) {
+        this.physicalMaxValue = physicalMaxValue;
+    }
+    
+    public long getPhysicalMaxValue(){
+        return this.physicalMaxValue;
     }
 
-    public void setMinValue(long minValue) {
-        this.minValue = minValue;
+    public void setPhysicalMinValue(long physicalMinValue) {
+        this.physicalMinValue = physicalMinValue;
+    }
+    
+    public long getPhysicalMinValue(){
+        return this.physicalMinValue;
+    }
+    
+    public void setLogicalMaxValue(long logicalMaxValue) {
+        this.logicalMaxValue = logicalMaxValue;
+    }
+    
+    public long getLogicalMaxValue(){
+        return logicalMaxValue;
+    }
+
+    public void setLogicalMinValue(long logicalMinValue) {
+        this.logicalMinValue = logicalMinValue;
+    } 
+    
+    public long getLogicalMinValue(){
+        return logicalMinValue;
     }
 
 //    public void setResultArray(int [] resultArray){

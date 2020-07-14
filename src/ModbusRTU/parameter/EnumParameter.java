@@ -13,27 +13,27 @@ package ModbusRTU.parameter;
 public class EnumParameter extends Parameter {
 
     @Override
-    public void setMinValue(long minValue) {
-        this.minValue = 0;
+    public void setPhysicalMinValue(long minValue) {
+        this.physicalMinValue = 0;
     }
 
     @Override
     public void checkInterval(int[] dataArray) {
         long l = collectDataToLong(dataArray);
-        if (l >= minValue && l <= maxValue) {
+        if (l >= physicalMinValue && l <= physicalMaxValue) {
 //            this.readResult = "R+ Ch+";
         }
     }
     
     @Override
     public int [] getOutOfRangeValue(){
-        int i = (int)this.maxValue + 1;
+        int i = (int)this.physicalMaxValue + 1;
         int ia [] = {i};
         return ia;
     }
     
     @Override
     public String getRange(){
-        return minValue + ".."+ maxValue;
+        return physicalMinValue + ".."+ physicalMaxValue;
     }
 }

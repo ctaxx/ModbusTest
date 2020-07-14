@@ -11,4 +11,21 @@ package ModbusRTU.parameter;
  */
 public class UnsignedParameter extends Parameter {
 
+    public UnsignedParameter(int size) {
+        this.physicalMinValue = 0;
+        switch (size) {
+            case 8:
+                physicalMaxValue = 255L;
+                break;
+            case 16:
+                physicalMaxValue = 65535L;
+                break;
+            case 32:
+                physicalMaxValue = 4294967295L;
+                break;
+            case 48:
+                break;
+        }
+    }
+
 }
