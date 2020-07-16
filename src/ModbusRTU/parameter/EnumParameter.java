@@ -36,4 +36,9 @@ public class EnumParameter extends Parameter {
     public String getRange(){
         return physicalMinValue + ".."+ physicalMaxValue;
     }
+    
+    @Override
+    public boolean isLogicalMatchesPhysical(){
+        return false;
+    }
 }

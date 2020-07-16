@@ -58,7 +58,7 @@ public class ModbusTCPTester {
 
     public void test(ArrayList<Parameter> array) {
         for (Parameter param : array) {
-            if (param.address == 308) {
+  //          if (param.address == 308) {
             resultString.append("<tr>");
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
@@ -91,6 +91,7 @@ public class ModbusTCPTester {
 
                 try {
                     tryToWriteParam(param, validValueToWrite);
+              //      tryToWriteParam(param, initialDataArray);
                     if (param.funcToRead == 3) {
                         resultString.append(checkWritingResult(tryToReadParam(param), validValueToWrite));
 //                        resultString.append("\n");
@@ -111,7 +112,7 @@ public class ModbusTCPTester {
             // writing wrong values
             resultString.append("<td>");
             int[] wrongValueToWrite = param.getOutOfRangeValue();
-            if ((param.funcToWrite == 16)&&(param.dataType.contains("Enum"))) {
+            if ((param.funcToWrite == 16)&&(!param.isLogicalMatchesPhysical())) {
                 resultString.append(param.getValueString(wrongValueToWrite));
                 resultString.append(" - ");
                 
@@ -145,7 +146,7 @@ public class ModbusTCPTester {
                     Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+ //       }
         }
         resultString.append("</table></html>");
         System.out.println(resultString.toString());

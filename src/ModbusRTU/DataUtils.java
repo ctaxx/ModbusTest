@@ -42,4 +42,22 @@ public class DataUtils {
                     ByteBuffer.wrap(highRegisterBytes).getInt()};
         return returnValue;
     }
+    
+    public static int[] ConvertARegister(long longValue) {
+        byte[] doubleBytes = toByteArrayLong(longValue);
+        byte[] highRegisterBytes
+                = {0, 0,
+                    doubleBytes[4],
+                    doubleBytes[5]};
+        byte[] lowRegisterBytes
+                = {0, 0,
+                    doubleBytes[6],
+                    doubleBytes[7]};
+        int[] returnValue
+                = {
+                    ByteBuffer.wrap(lowRegisterBytes).getInt(),
+//                    ByteBuffer.wrap(highRegisterBytes).getInt()
+                };
+        return returnValue;
+    }
 }

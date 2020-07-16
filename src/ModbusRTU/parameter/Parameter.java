@@ -139,4 +139,8 @@ public class Parameter {
     public String getRange() {
         return "range";
     }
+    
+    public boolean isLogicalMatchesPhysical(){
+        return true;
+    }
 }

@@ -14,10 +14,9 @@ import ModbusRTU.DataUtils;
 public class UnsignedParameter extends Parameter {
 
     //physicalMinValue = 0;
-    
     @Override
-    public void setPhysicalMaxValue(long size) {     
-        switch ((int)size) {
+    public void setPhysicalMaxValue(long size) {
+        switch ((int) size) {
             case 8:
                 physicalMaxValue = 255L;
                 break;
@@ -31,17 +30,32 @@ public class UnsignedParameter extends Parameter {
                 break;
         }
     }
-    
+
     @Override
-    public String getRange(){
+    public String getRange() {
         return logicalMinValue + ".." + logicalMaxValue;
     }
-    
+
     @Override
-    public int [] getValidValue(){
+    public int[] getValidValue() {
+        if (numOfRegs == 1) {
+            return DataUtils.ConvertARegister(logicalMinValue + 3L);
+        }
         int[] ia = DataUtils.ConvertLongToRegisters(logicalMinValue + 3L);
 //        int[] ia = {0xA};
         return ia;
     }
 
+    @Override
+    public int[] getOutOfRangeValue() {
+        if (numOfRegs == 1) {
+            return DataUtils.ConvertARegister(logicalMaxValue + 1L);
+        }
+        return DataUtils.ConvertLongToRegisters(logicalMaxValue + 1L);
+    }
+
+    @Override
+    public boolean isLogicalMatchesPhysical() {
+        return ((logicalMinValue == physicalMinValue) && (logicalMaxValue == physicalMaxValue));
+    }
 }
