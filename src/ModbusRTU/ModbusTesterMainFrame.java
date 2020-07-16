@@ -113,14 +113,11 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                 JFileChooser fc = new JFileChooser();
                 fc.setFileFilter(filter);
                 if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-//                    File file = fc.getSelectedFile();
-                    File ff = new File(fc.getSelectedFile() + EXTENSION);
-                    try (FileWriter fw = new FileWriter(ff)) {
-//                        File ff = new File(fc.getSelectedFile() + EXTENSION);
-                        System.out.println(ff.getPath());
+                    File file = new File(fc.getSelectedFile() + EXTENSION);
+                    try (FileWriter fw = new FileWriter(file)) {
                         fw.write(tester.resultString.toString());
                     } catch (IOException ex) {
-                        System.out.println("Всё погибло!");
+                        System.err.println(ex.getMessage());
                     }
                 }
             }
