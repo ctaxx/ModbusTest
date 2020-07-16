@@ -100,6 +100,7 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                 if (tester.init(ipTextField.getText(), 502)) {
                     tester.test(parser.getParameterArray());
                 }
+                saveButton.setEnabled(true);
             }
         });
         northPanel.add(testButton);
@@ -145,7 +146,7 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                 parser = new ParserCSV(str);
                 testButton.setEnabled(true);
 
-                saveButton.setEnabled(true);
+//                saveButton.setEnabled(true);
                 ipTextField.setText(parser.currentIP);
 
                 tableModel.setRowCount(0);
