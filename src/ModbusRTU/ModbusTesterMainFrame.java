@@ -11,6 +11,9 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -44,6 +47,8 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
     JButton openButton, testButton, saveButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
+    
+    public static final String EXTENSION = ".html";
 
     public static void main(String[] args) {
         new ModbusTesterMainFrame();
@@ -104,7 +109,20 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                saveStatus();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("html files (*.html)", EXTENSION);
+                JFileChooser fc = new JFileChooser();
+                fc.setFileFilter(filter);
+                if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//                    File file = fc.getSelectedFile();
+                    File ff = new File(fc.getSelectedFile() + EXTENSION);
+                    try (FileWriter fw = new FileWriter(ff)) {
+//                        File ff = new File(fc.getSelectedFile() + EXTENSION);
+                        System.out.println(ff.getPath());
+                        fw.write(tester.resultString.toString());
+                    } catch (IOException ex) {
+                        System.out.println("Всё погибло!");
+                    }
+                }
             }
         });
         northPanel.add(saveButton);
@@ -124,8 +142,8 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
             JFileChooser fileDialog = new JFileChooser("D:/");
             fileDialog.setFileFilter(filter);
             int ret = fileDialog.showDialog(this, "Open");
-            
-                       if (ret == JFileChooser.APPROVE_OPTION) {
+
+            if (ret == JFileChooser.APPROVE_OPTION) {
                 String str = FileUtils.fileReader(fileDialog.getSelectedFile());
                 parser = new ParserCSV(str);
                 testButton.setEnabled(true);
@@ -159,7 +177,7 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                     }
                 }).start();
             }
-            
+
         }
     }
 
