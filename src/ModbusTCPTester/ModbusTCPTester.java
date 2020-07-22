@@ -131,31 +131,23 @@ public class ModbusTCPTester {
 
     public String writingWrongValues(Parameter param) {
         StringBuilder resultStr = new StringBuilder();
-        //            resultString.append("<td>");
         int[] wrongValueToWrite = param.getOutOfRangeValue();
         String resultOfWrongWriting = param.getValueString(wrongValueToWrite);
         boolean resultOfWrongWritingB = true;
         if ((param.funcToWrite == 16) && (!param.isLogicalMatchesPhysical())) {
-//                resultString.append(param.getValueString(wrongValueToWrite));
-//                resultString.append(" - ");
 
             try {
                 tryToWriteAParam(param, wrongValueToWrite);
                 if (param.funcToRead == 3) {
                     resultStr.append(checkWritingResult(tryToReadAParam(param), wrongValueToWrite));
-//                        resultString.append("\n");
                 } else {
-//                        resultString.append("NA");
                     resultOfWrongWriting = "NA";
                 }
             } catch (FuncException ex) {
                 Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
-//                    resultString.append("false");
                 resultOfWrongWritingB = false;
             }
-
         } else {
-//                resultString.append("не проверялось");
             resultOfWrongWriting = "не проверялось";
             resultOfWrongWritingB = false;
         }
