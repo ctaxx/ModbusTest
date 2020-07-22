@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusRTU;
+package ModbusTCPTester;
 
-import ModbusRTU.parameter.ParserCSV;
-import ModbusRTU.parameter.Parameter;
+import ModbusTCPTester.ModbusTCPTester;
+import ModbusTCPTester.FileUtils;
+import ModbusTCPTester.parameter.ParserCSV;
+import ModbusTCPTester.parameter.Parameter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;

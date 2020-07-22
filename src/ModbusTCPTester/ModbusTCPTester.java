@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusRTU;
+package ModbusTCPTester;
 
-import ModbusRTU.parameter.Parameter;
+import ModbusRTU.ModbusClient;
+import ModbusTCPTester.FuncException;
+import ModbusTCPTester.parameter.Parameter;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
 import java.net.SocketException;

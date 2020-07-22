@@ -5,6 +5,7 @@
  */
 package ModbusRTU;
 
+import ModbusTCPTester.DataUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

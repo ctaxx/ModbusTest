@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusRTU.parameter;
+package ModbusTCPTester.parameter;
 
-import ModbusRTU.DataUtils;
+import ModbusTCPTester.DataUtils;
 
 /**
  *

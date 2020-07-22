@@ -15,6 +15,7 @@
  */
 package ModbusRTU;
 
+import ModbusTCPTester.FuncException;
 import de.re.easymodbus.modbusclient.*;
 import java.io.IOException;
 import java.net.*;

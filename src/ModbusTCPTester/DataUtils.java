@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusRTU;
+package ModbusTCPTester;
 
 import static de.re.easymodbus.modbusclient.ModbusClient.toByteArrayLong;
 import java.nio.ByteBuffer;
