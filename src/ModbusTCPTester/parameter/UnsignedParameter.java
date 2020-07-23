@@ -47,11 +47,24 @@ public class UnsignedParameter extends Parameter {
     }
 
     @Override
-    public int[] getOutOfRangeValue() {
+    public int[][] getOutOfRangeValue() {
         if (numOfRegs == 1) {
-            return DataUtils.ConvertARegister(logicalMaxValue + 1L);
+            if ((logicalMinValue > physicalMinValue) && (logicalMaxValue < physicalMaxValue)) {
+                return new int[][]{DataUtils.ConvertARegister(logicalMinValue - 1L), DataUtils.ConvertARegister(logicalMaxValue + 1L)};
+            }
+            if (logicalMinValue > physicalMinValue) {
+                return new int[][]{DataUtils.ConvertARegister(logicalMinValue - 1L)};
+            }
+            return new int[][]{DataUtils.ConvertARegister(logicalMaxValue + 1L)};
         }
-        return DataUtils.ConvertLongToRegisters(logicalMaxValue + 1L);
+
+        if ((logicalMinValue > physicalMinValue) && (logicalMaxValue < physicalMaxValue)) {
+            return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue - 1L), DataUtils.ConvertLongToRegisters(logicalMaxValue + 1L)};
+        }
+        if (logicalMinValue > physicalMinValue) {
+            return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue - 1L)};
+        }
+        return new int[][]{DataUtils.ConvertLongToRegisters(logicalMaxValue + 1L)};
     }
 
     @Override

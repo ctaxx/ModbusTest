@@ -26,9 +26,9 @@ public class EnumParameter extends Parameter {
     }
     
     @Override
-    public int [] getOutOfRangeValue(){
+    public int [][] getOutOfRangeValue(){
         int i = (int)this.physicalMaxValue + 1;
-        int ia [] = {i};
+        int ia [][] = {{i}};
         return ia;
     }
     

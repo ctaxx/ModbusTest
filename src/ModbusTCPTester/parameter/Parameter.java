@@ -131,8 +131,8 @@ public class Parameter {
         return ia;
     }
 
-    public int[] getOutOfRangeValue() {
-        int[] ia = {0xA};
+    public int[][] getOutOfRangeValue() {
+        int[][] ia = {{0xA}};
         return ia;
     }
 

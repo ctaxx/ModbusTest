@@ -130,33 +130,53 @@ public class ModbusTCPTester {
     }
 
     public String writingWrongValues(Parameter param) {
-        StringBuilder resultStr = new StringBuilder();
-        int[] wrongValueToWrite = param.getOutOfRangeValue();
-        String resultOfWrongWriting = param.getValueString(wrongValueToWrite);
-        boolean resultOfWrongWritingB = true;
-        if ((param.funcToWrite == 16) && (!param.isLogicalMatchesPhysical())) {
+        StringBuilder resultStr = new StringBuilder("<td>");
 
-            try {
-                tryToWriteAParam(param, wrongValueToWrite);
-                if (param.funcToRead == 3) {
-                    resultStr.append(checkWritingResult(tryToReadAParam(param), wrongValueToWrite));
-                } else {
-                    resultOfWrongWriting = "NA";
+        StringBuilder bunchOfWrongValues;
+
+        if (param.funcToWrite == 16) {
+            if (!param.isLogicalMatchesPhysical()) {
+
+                bunchOfWrongValues = new StringBuilder();
+                int[][] wrongValuesToWrite = param.getOutOfRangeValue();
+
+                for (int i = 0; i < wrongValuesToWrite.length; i++) {
+                    boolean allowedToWriteWrongValue = true;
+                    int[] wrongValueToWrite = wrongValuesToWrite[i];
+
+                    try {
+                        tryToWriteAParam(param, wrongValueToWrite);
+                        if (param.funcToRead == 3) {
+                            if (!checkWritingResult(tryToReadAParam(param), wrongValueToWrite)){
+//                                throw new FuncException();
+                            }
+                        } else {
+                            bunchOfWrongValues = new StringBuilder("NA");
+                        }
+                    } catch (FuncException ex) {
+                        Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
+                        allowedToWriteWrongValue = false;
+                    }
+
+                    if (allowedToWriteWrongValue) {
+                        bunchOfWrongValues.append("<span style=\"color:red\">");
+                    }
+                    bunchOfWrongValues.append(param.getValueString(wrongValueToWrite));
+                    if (allowedToWriteWrongValue) {
+                        bunchOfWrongValues.append("</span>");
+                    }
+                    bunchOfWrongValues.append("<br>");
                 }
-            } catch (FuncException ex) {
-                Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
-                resultOfWrongWritingB = false;
+            } else {
+                bunchOfWrongValues = new StringBuilder("не проверялось");
             }
+
         } else {
-            resultOfWrongWriting = "не проверялось";
-            resultOfWrongWritingB = false;
+            bunchOfWrongValues = new StringBuilder("–");
         }
-        resultStr.append("<td");
-        if (resultOfWrongWritingB) {
-            resultStr.append(" style=\"color:red\"");
-        }
-        resultStr.append(">").append(resultOfWrongWriting).append("</td>");
-        resultStr.append("</tr>");
+
+        resultStr.append(bunchOfWrongValues).append("</td>\n");
+        resultStr.append("</tr>\n");
 
         return resultStr.toString();
     }
