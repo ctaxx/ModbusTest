@@ -83,31 +83,8 @@ public class ModbusTCPTester {
             }
 
             // writing valid value
-            resultString.append("<td>");
-
-            if (param.funcToWrite == 16) {
-                int[] validValueToWrite = param.getValidValue();
-                resultString.append(param.getValueString(validValueToWrite));
-                resultString.append(" - ");
-
-                try {
-                    tryToWriteAParam(param, validValueToWrite);
-                    //      tryToWriteParam(param, initialDataArray);
-                    if (param.funcToRead == 3) {
-                        resultString.append(checkWritingResult(tryToReadAParam(param), validValueToWrite));
-//                        resultString.append("\n");
-                    } else {
-                        resultString.append("NA");
-                    }
-                } catch (FuncException ex) {
-                    Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
-                    resultString.append("false");
-                }
-
-            } else {
-                resultString.append("не проверялось");
-            }
-            resultString.append("</td>");
+            resultString.append(writingValidValues(param));
+            
 
             // writing wrong values
             resultString.append(writingWrongValues(param));
@@ -129,6 +106,36 @@ public class ModbusTCPTester {
 
     }
 
+    public String writingValidValues(Parameter param){
+        StringBuilder resultStr = new StringBuilder("<td>");
+        
+        StringBuilder bunchOfValidValues;
+
+            if (param.funcToWrite == 16) {
+                int[] validValueToWrite = param.getValidValue();
+                resultStr.append(param.getValueString(validValueToWrite));
+                resultStr.append(" - ");
+
+                try {
+                    tryToWriteAParam(param, validValueToWrite);
+                    if (param.funcToRead == 3) {
+                        resultStr.append(checkWritingResult(tryToReadAParam(param), validValueToWrite));
+                    } else {
+                        resultStr.append("NA");
+                    }
+                } catch (FuncException ex) {
+                    Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
+                    resultStr.append("false");
+                }
+
+            } else {
+                resultStr.append("не проверялось");
+            }
+            resultStr.append("</td>");
+        
+        return resultStr.toString();
+    }
+    
     public String writingWrongValues(Parameter param) {
         StringBuilder resultStr = new StringBuilder("<td>");
 
