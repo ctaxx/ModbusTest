@@ -112,24 +112,35 @@ public class ModbusTCPTester {
 
         if (param.funcToWrite == 16) {
             int[] validValueToWrite = param.getValidValue();
-            resultStr.append(param.getValueString(validValueToWrite));
-            resultStr.append(" - ");
+            bunchOfValidValues = new StringBuilder();
+
+            boolean allowedToWriteValidValue = false;
 
             try {
                 tryToWriteAParam(param, validValueToWrite);
                 if (param.funcToRead == 3) {
-                    resultStr.append(checkWritingResult(tryToReadAParam(param), validValueToWrite));
+                    allowedToWriteValidValue = checkWritingResult(tryToReadAParam(param), validValueToWrite);
                 } else {
-                    resultStr.append("NA");
+                    bunchOfValidValues = new StringBuilder("NA");
+                    allowedToWriteValidValue = true;
                 }
             } catch (FuncException ex) {
                 Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
-                resultStr.append("false");
+            }
+            if (!allowedToWriteValidValue) {
+                bunchOfValidValues.append("<span style=\"color:red\">");
+            }
+            bunchOfValidValues.append(param.getValueString(validValueToWrite));
+            if (!allowedToWriteValidValue) {
+                bunchOfValidValues.append("</span>");
             }
 
+            bunchOfValidValues.append("<br>");
+
         } else {
-            resultStr.append("не проверялось");
+            bunchOfValidValues = new StringBuilder("–");
         }
+        resultStr.append(bunchOfValidValues);
         resultStr.append("</td>");
 
         return resultStr.toString();
