@@ -6,6 +6,9 @@
 package ModbusTCPTester.parameter;
 
 //import static ModbusRTU.DataUtils.dataArrayToInt;
+
+import ModbusTCPTester.DataUtils;
+
 /**
  *
  * @author bykov_sp
@@ -23,6 +26,12 @@ public class EnumParameter extends Parameter {
         if (l >= physicalMinValue && l <= physicalMaxValue) {
 //            this.readResult = "R+ Ch+";
         }
+    }
+    
+    @Override
+    public int [][] getValidValue(){
+        return new int [][]{DataUtils.ConvertARegister(physicalMinValue),
+            DataUtils.ConvertARegister(physicalMaxValue)};
     }
     
     @Override
