@@ -38,7 +38,24 @@ public class UnsignedParameter extends Parameter {
 
     @Override
     public int[][] getValidValue() {
+        int arraySize;
+        long logicalMediumValue = 0;
+        if ((logicalMaxValue - logicalMinValue) > 1) {
+            arraySize = 3;
+            logicalMediumValue = (logicalMaxValue + logicalMinValue) / 2;
+        } else {
+            arraySize = 2;
+        }
         if (numOfRegs == 1) {
+            if (arraySize == 3) {
+                return new int[][]{DataUtils.ConvertARegister(logicalMinValue),
+                    DataUtils.ConvertARegister(logicalMediumValue),
+                    DataUtils.ConvertARegister(logicalMaxValue)};
+            }
+            if (arraySize == 2) {
+                return new int[][]{DataUtils.ConvertARegister(logicalMinValue),
+                    DataUtils.ConvertARegister(logicalMaxValue)};
+            }
             return new int[][]{DataUtils.ConvertARegister(logicalMinValue + 3L)};
         }
         return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue + 3L)};
