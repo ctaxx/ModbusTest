@@ -126,8 +126,8 @@ public class Parameter {
         }
     }
 
-    public int[] getValidValue() {
-        int[] ia = {0x1};
+    public int[][] getValidValue() {
+        int[][] ia = {{0x1}};
         return ia;
     }
 

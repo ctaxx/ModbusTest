@@ -37,13 +37,13 @@ public class UnsignedParameter extends Parameter {
     }
 
     @Override
-    public int[] getValidValue() {
+    public int[][] getValidValue() {
         if (numOfRegs == 1) {
-            return DataUtils.ConvertARegister(logicalMinValue + 3L);
+            return new int[][]{DataUtils.ConvertARegister(logicalMinValue + 3L)};
         }
-        int[] ia = DataUtils.ConvertLongToRegisters(logicalMinValue + 3L);
+        return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue + 3L)};
 //        int[] ia = {0xA};
-        return ia;
+//        return ia;
     }
 
     @Override

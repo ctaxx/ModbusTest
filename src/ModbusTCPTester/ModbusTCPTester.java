@@ -111,31 +111,34 @@ public class ModbusTCPTester {
         StringBuilder bunchOfValidValues;
 
         if (param.funcToWrite == 16) {
-            int[] validValueToWrite = param.getValidValue();
+
             bunchOfValidValues = new StringBuilder();
+            int[][] validValuesToWrite = param.getValidValue();
+            for (int i = 0; i < validValuesToWrite.length; i++) {
+                int[] validValueToWrite = validValuesToWrite[i];
+                boolean allowedToWriteValidValue = false;
 
-            boolean allowedToWriteValidValue = false;
-
-            try {
-                tryToWriteAParam(param, validValueToWrite);
-                if (param.funcToRead == 3) {
-                    allowedToWriteValidValue = checkWritingResult(tryToReadAParam(param), validValueToWrite);
-                } else {
-                    bunchOfValidValues = new StringBuilder("NA");
-                    allowedToWriteValidValue = true;
+                try {
+                    tryToWriteAParam(param, validValueToWrite);
+                    if (param.funcToRead == 3) {
+                        allowedToWriteValidValue = checkWritingResult(tryToReadAParam(param), validValueToWrite);
+                    } else {
+                        bunchOfValidValues = new StringBuilder("NA");
+                        allowedToWriteValidValue = true;
+                    }
+                } catch (FuncException ex) {
+                    Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (FuncException ex) {
-                Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (!allowedToWriteValidValue) {
-                bunchOfValidValues.append("<span style=\"color:red\">");
-            }
-            bunchOfValidValues.append(param.getValueString(validValueToWrite));
-            if (!allowedToWriteValidValue) {
-                bunchOfValidValues.append("</span>");
-            }
+                if (!allowedToWriteValidValue) {
+                    bunchOfValidValues.append("<span style=\"color:red\">");
+                }
+                bunchOfValidValues.append(param.getValueString(validValueToWrite));
+                if (!allowedToWriteValidValue) {
+                    bunchOfValidValues.append("</span>");
+                }
 
-            bunchOfValidValues.append("<br>");
+                bunchOfValidValues.append("<br>");
+            }
 
         } else {
             bunchOfValidValues = new StringBuilder("–");
@@ -192,7 +195,7 @@ public class ModbusTCPTester {
             bunchOfWrongValues = new StringBuilder("–");
         }
 
-        resultStr.append(bunchOfWrongValues).append("</td>\n");
+        resultStr.append(bunchOfWrongValues).append("</td>");
         resultStr.append("</tr>\n");
 
         return resultStr.toString();
