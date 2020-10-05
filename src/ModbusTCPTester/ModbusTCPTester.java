@@ -6,7 +6,6 @@
 package ModbusTCPTester;
 
 import ModbusRTU.ModbusClient;
-import ModbusTCPTester.FuncException;
 import ModbusTCPTester.parameter.Parameter;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
