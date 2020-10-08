@@ -687,8 +687,8 @@ public class ModbusClient {
      */
     public boolean[] ReadDiscreteInputs(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException {
         boolean[] returnValue = this.ReadDiscreteInputs(startingAddress, quantity);
-        List<String> topic = new ArrayList<String>();
-        List<String> payload = new ArrayList<String>();
+        List<String> topic = new ArrayList<>();
+        List<String> payload = new ArrayList<>();
         if (mqttPushOnChange && mqttDiscreteInputsOldValues == null) {
             mqttDiscreteInputsOldValues = new boolean[65535];
         }
@@ -988,7 +988,8 @@ public class ModbusClient {
             if (quantity % 8 == 0) {
                 expectedlength = 5 + quantity / 8;
             }
-            while (receivedUnitIdentifier != this.unitIdentifier & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
+            while (receivedUnitIdentifier != this.unitIdentifier 
+                    & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
                 serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
 
                 receivedUnitIdentifier = serialdata[0];
@@ -1132,7 +1133,7 @@ public class ModbusClient {
     }
 
     /**
-     * Read Holding Registers from Server
+     * Read Holding Registers from Server (function 0x03)
      *
      * @param startingAddress Fist Address to read; Shifted by -1
      * @param quantity Number of Inputs to read
@@ -1142,6 +1143,7 @@ public class ModbusClient {
      * @throws SocketException
      * @throws SerialPortTimeoutException
      * @throws SerialPortException
+     * @throws FuncException
      */
     public int[] ReadHoldingRegisters(int startingAddress, int quantity) throws de.re.easymodbus.exceptions.ModbusException,
             UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
@@ -1195,7 +1197,8 @@ public class ModbusClient {
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialdata = new byte[256];
             int expectedlength = 5 + 2 * quantity;
-            while (receivedUnitIdentifier != this.unitIdentifier & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
+            while (receivedUnitIdentifier != this.unitIdentifier 
+                    & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
                 serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
 
                 receivedUnitIdentifier = serialdata[0];
@@ -1257,28 +1260,9 @@ public class ModbusClient {
                 }
             }
         }
-//        data = DataUtils.trimInts(data);
 
-//        if (((byte) data[7]) == 0x83 & ((int) data[8]) == 0x01) {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x01) {
-            System.out.println("FunctionCodeNotSupportedException Throwed");
-            throw new FuncException("FunctionCodeNotSupportedException Throwed");
-        }
-//        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x02) {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x02) {
-//            System.err.println("Starting address invalid or starting adress + quantity invalid");
-            throw new FuncException("Starting address invalid or starting adress + quantity invalid");
-        }
-//        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x03) {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x03) {
-//                System.out.println("Quantity invalid");
-            throw new FuncException("Quantity invalid");
-        }
-//        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x04) {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {
-            System.err.println("Error reading");
-            throw new FuncException("Error reading");
-        }
+        checkModbusResponse(data);
+
         for (int i = 0; i < quantity; i++) {
             byte[] bytes = new byte[2];
             bytes[0] = data[9 + i * 2];
@@ -1342,7 +1326,7 @@ public class ModbusClient {
     }
 
     /**
-     * Read Input Registers from Server
+     * Read Input Registers from Server (function 0x04)
      *
      * @param startingAddress Fist Address to read; Shifted by -1
      * @param quantity Number of Inputs to read
@@ -2621,4 +2605,29 @@ public class ModbusClient {
         sendDataChangedListener.add(toAdd);
     }
 
+    /**
+     * checking for Modbus standard errors
+     * 
+     * @param data
+     * @throws FuncException 
+     */
+    public void checkModbusResponse(byte[] data) throws FuncException{
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x01) {
+//            System.err.println("FunctionCodeNotSupportedException Throwed");
+            throw new FuncException("FunctionCodeNotSupportedException Throwed");
+        }
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x02) {
+//            System.err.println("Starting address invalid or starting adress + quantity invalid");
+            throw new FuncException("Starting address invalid or starting adress + quantity invalid");
+        }
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x03) {
+//                System.out.println("Quantity invalid");
+            throw new FuncException("Quantity invalid");
+        }
+//        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x04) {
+        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {
+//            System.err.println("Error reading");
+            throw new FuncException("Error reading");
+        }
+    }
 }

@@ -7,7 +7,6 @@ package ModbusTCPTester;
 
 import ModbusTCPTester.ModbusTCPTester;
 import ModbusTCPTester.FileUtils;
-import ModbusTCPTester.parameter.ParserCSV;
 import ModbusTCPTester.parameter.Parameter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

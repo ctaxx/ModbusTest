@@ -3,8 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusTCPTester.parameter;
+package ModbusTCPTester;
 
+import ModbusTCPTester.parameter.DateTime32Parameter;
+import ModbusTCPTester.parameter.EnumParameter;
+import ModbusTCPTester.parameter.Parameter;
+import ModbusTCPTester.parameter.UnsignedParameter;
 import java.util.ArrayList;
 
 /**
