@@ -923,7 +923,7 @@ public class ModbusClient {
     }
 
     /**
-     * Read Coils from Server
+     * Read Coils from Server (function 0x01)
      *
      * @param startingAddress Fist Address to read; Shifted by -1
      * @param quantity Number of Inputs to read
@@ -974,13 +974,8 @@ public class ModbusClient {
         }
         byte[] serialdata = null;
         if (serialflag) {
-            serialdata = new byte[8];
-            java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
-            serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
-            serialPort.writeBytes(serialdata);
-            if (debug) {
-                StoreLogData.getInstance().Store("Send Serial-Data: " + Arrays.toString(serialdata));
-            }
+            sendSerialData(data);
+            
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialdata = new byte[256];
@@ -988,7 +983,7 @@ public class ModbusClient {
             if (quantity % 8 == 0) {
                 expectedlength = 5 + quantity / 8;
             }
-            while (receivedUnitIdentifier != this.unitIdentifier 
+            while (receivedUnitIdentifier != this.unitIdentifier
                     & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
                 serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
 
@@ -1186,18 +1181,14 @@ public class ModbusClient {
         }
         byte[] serialdata = null;
         if (serialflag) {
-            serialdata = new byte[8];
-            java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
-            serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
-            serialPort.writeBytes(serialdata);
-            if (debug) {
-                StoreLogData.getInstance().Store("Send Serial-Data: " + Arrays.toString(serialdata));
-            }
+
+            sendSerialData(data);
+            
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialdata = new byte[256];
             int expectedlength = 5 + 2 * quantity;
-            while (receivedUnitIdentifier != this.unitIdentifier 
+            while (receivedUnitIdentifier != this.unitIdentifier
                     & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
                 serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
 
@@ -2607,11 +2598,11 @@ public class ModbusClient {
 
     /**
      * checking for Modbus standard errors
-     * 
+     *
      * @param data
-     * @throws FuncException 
+     * @throws FuncException
      */
-    public void checkModbusResponse(byte[] data) throws FuncException{
+    public void checkModbusResponse(byte[] data) throws FuncException {
         if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x01) {
 //            System.err.println("FunctionCodeNotSupportedException Throwed");
             throw new FuncException("FunctionCodeNotSupportedException Throwed");
@@ -2628,6 +2619,21 @@ public class ModbusClient {
         if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {
 //            System.err.println("Error reading");
             throw new FuncException("Error reading");
+        }
+    }
+
+    /**
+     * Sending request via serial
+     * @param data
+     * @throws SerialPortException 
+     */
+    public void sendSerialData(byte[] data) throws SerialPortException {
+        byte[] serialdata = new byte[8];
+        java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
+        serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
+        serialPort.writeBytes(serialdata);
+        if (debug) {
+            StoreLogData.getInstance().Store("Send Serial-Data: " + Arrays.toString(serialdata));
         }
     }
 }
