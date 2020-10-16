@@ -49,7 +49,7 @@ public class ModbusClient {
     private byte[] startingAddress = new byte[2];
     private byte[] quantity = new byte[2];
     private boolean udpFlag = false;
-    private boolean serialflag = false;
+    private boolean serialFlag = false;
     private int connectTimeout = 1000;
     private InputStream inStream;
     private DataOutputStream outStream;
@@ -72,7 +72,8 @@ public class ModbusClient {
     private int[] mqttHoldingRegistersOldValues;
     private int numberOfRetries = 3;				//Number of retries in case of serial connection
     private int baudrate = 9600;
-    private Parity parity = Parity.Even;
+    private Parity parity = Parity.None;
+    private int dataBits = 8;
     private StopBits stopBits = StopBits.One;
     private boolean debug = false;
 
@@ -113,7 +114,27 @@ public class ModbusClient {
             StoreLogData.getInstance().Store("EasyModbus library initialized for Modbus-RTU, COM-Port: " + serialPort);
         }
         this.comPort = serialPort;
-        this.serialflag = true;
+        this.serialFlag = true;
+        if (debug) {
+            StoreLogData.getInstance().Store("Open Serial Port: " + comPort);
+        }
+    }
+    
+    public ModbusClient(String serialPort, int baudrate, int dataBits) {
+        System.out.println("EasyModbus Client Library");
+        System.out.println("Copyright (c) Stefan Rossmann Engineering Solutions");
+        System.out.println("www.rossmann-engineering.de");
+        System.out.println("");
+        System.out.println("Creative commons license");
+        System.out.println("Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)");
+        if (debug) {
+            StoreLogData.getInstance().Store("EasyModbus library initialized for Modbus-RTU, COM-Port: " 
+                    + serialPort + ", baudrate: " + baudrate);
+        }
+        this.baudrate = baudrate;
+        this.dataBits = dataBits;
+        this.comPort = serialPort;
+        this.serialFlag = true;
         if (debug) {
             StoreLogData.getInstance().Store("Open Serial Port: " + comPort);
         }
@@ -126,7 +147,7 @@ public class ModbusClient {
      * @throws IOException
      */
     public void Connect() throws UnknownHostException, IOException {
-        if (!udpFlag && !this.serialflag) {
+        if (!udpFlag && !this.serialFlag) {
 
             tcpClientSocket = new Socket(ipAddress, port);
             tcpClientSocket.setSoTimeout(connectTimeout);
@@ -136,14 +157,14 @@ public class ModbusClient {
                 StoreLogData.getInstance().Store("Open TCP-Socket, IP-Address: " + ipAddress + ", Port: " + port);
             }
         }
-        if (this.serialflag) {
+        if (this.serialFlag) {
             serialPort = new SerialPort(comPort);
 
             try {
                 serialPort.openPort();
 
                 serialPort.setParams(this.baudrate,
-                        8,
+                        this.dataBits,
                         this.stopBits.getValue(),
                         this.parity.getValue());
 
@@ -188,7 +209,7 @@ public class ModbusClient {
      * @throws IOException
      */
     public void Connect(String comPort) throws SerialPortException {
-        this.serialflag = true;
+        this.serialFlag = true;
         serialPort = new SerialPort(comPort);
 
         serialPort.openPort();
@@ -755,13 +776,13 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[8];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -894,8 +915,9 @@ public class ModbusClient {
      * @throws ModbusException
      * @throws SocketException
      * @throws UnknownHostException
+     * @throws ModbusTCPTester.FuncException
      */
-    public boolean[] ReadCoils(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException {
+    public boolean[] ReadCoils(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         boolean[] returnValue = this.ReadCoils(startingAddress, quantity);
         List<String> topic = new ArrayList<String>();
         List<String> payload = new ArrayList<String>();
@@ -933,10 +955,11 @@ public class ModbusClient {
      * @throws SocketException
      * @throws SerialPortTimeoutException
      * @throws SerialPortException
+     * @throws ModbusTCPTester.FuncException
      */
     public boolean[] ReadCoils(int startingAddress, int quantity) throws de.re.easymodbus.exceptions.ModbusException,
-            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException {
-        if (tcpClientSocket == null) {
+            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
+        if (!serialFlag && tcpClientSocket == null) {
             throw new de.re.easymodbus.exceptions.ConnectionException("connection Error");
         }
         if (startingAddress > 65535 | quantity > 2000) {
@@ -966,36 +989,36 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
 
         }
-        byte[] serialdata = null;
-        if (serialflag) {
+        byte[] serialData = null;
+        if (serialFlag) {
             sendSerialData(data);
             
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
-            serialdata = new byte[256];
+            serialData = new byte[256];
             int expectedlength = 5 + quantity / 8 + 1;
             if (quantity % 8 == 0) {
                 expectedlength = 5 + quantity / 8;
             }
             while (receivedUnitIdentifier != this.unitIdentifier
                     & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
-                serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
+                serialData = serialPort.readBytes(expectedlength, this.connectTimeout);
 
-                receivedUnitIdentifier = serialdata[0];
+                receivedUnitIdentifier = serialData[0];
             }
             if (receivedUnitIdentifier != this.unitIdentifier) {
-                serialdata = new byte[256];
+                serialData = new byte[256];
             }
         }
-        if (serialdata != null) {
+        if (serialData != null) {
             data = new byte[262];
-            System.arraycopy(serialdata, 0, data, 6, serialdata.length);
+            System.arraycopy(serialData, 0, data, 6, serialData.length);
             if (debug) {
                 StoreLogData.getInstance().Store("Receive ModbusRTU-Data: " + Arrays.toString(data));
             }
@@ -1038,30 +1061,9 @@ public class ModbusClient {
                 }
             }
         }
-        if (((int) (data[7] & 0xff)) == 0x81 & ((int) data[8]) == 0x01) {
-            if (debug) {
-                StoreLogData.getInstance().Store("FunctionCodeNotSupportedException Throwed");
-            }
-            throw new de.re.easymodbus.exceptions.FunctionCodeNotSupportedException("Function code not supported by master");
-        }
-        if (((int) (data[7] & 0xff)) == 0x81 & ((int) data[8]) == 0x02) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Starting adress invalid or starting adress + quantity invalid");
-            }
-            throw new de.re.easymodbus.exceptions.StartingAddressInvalidException("Starting adress invalid or starting adress + quantity invalid");
-        }
-        if (((int) (data[7] & 0xff)) == 0x81 & ((int) data[8]) == 0x03) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Quantity invalid");
-            }
-            throw new de.re.easymodbus.exceptions.QuantityInvalidException("Quantity invalid");
-        }
-        if (((int) (data[7] & 0xff)) == 0x81 & ((int) data[8]) == 0x04) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Error reading");
-            }
-            throw new de.re.easymodbus.exceptions.ModbusException("Error reading");
-        }
+        
+        checkModbusResponse(data, functionCode);
+        
         for (int i = 0; i < quantity; i++) {
             int intData = (int) data[9 + i / 8];
             int mask = (int) Math.pow(2, (i % 8));
@@ -1142,7 +1144,7 @@ public class ModbusClient {
      */
     public int[] ReadHoldingRegisters(int startingAddress, int quantity) throws de.re.easymodbus.exceptions.ModbusException,
             UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
-        if (tcpClientSocket == null) {
+        if (!serialFlag && tcpClientSocket == null) {
             throw new de.re.easymodbus.exceptions.ConnectionException("connection Error");
         }
         if (startingAddress > 65535 | quantity > 125) {
@@ -1174,32 +1176,32 @@ public class ModbusClient {
             this.crc[1]
         };
 
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
-        byte[] serialdata = null;
-        if (serialflag) {
+        byte[] serialData = null;
+        if (serialFlag) {
 
             sendSerialData(data);
             
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
-            serialdata = new byte[256];
+            serialData = new byte[256];
             int expectedlength = 5 + 2 * quantity;
             while (receivedUnitIdentifier != this.unitIdentifier
                     & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
-                serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
+                serialData = serialPort.readBytes(expectedlength, this.connectTimeout);
 
-                receivedUnitIdentifier = serialdata[0];
+                receivedUnitIdentifier = serialData[0];
             }
             if (receivedUnitIdentifier != this.unitIdentifier) {
                 data = new byte[256];
             }
-            if (serialdata != null) {
+            if (serialData != null) {
                 data = new byte[262];
-                System.arraycopy(serialdata, 0, data, 6, serialdata.length);
+                System.arraycopy(serialData, 0, data, 6, serialData.length);
                 if (debug) {
                     StoreLogData.getInstance().Store("Receive ModbusRTU-Data: " + Arrays.toString(data));
                 }
@@ -1252,7 +1254,7 @@ public class ModbusClient {
             }
         }
 
-        checkModbusResponse(data);
+        checkModbusResponse(data, this.functionCode);
 
         for (int i = 0; i < quantity; i++) {
             byte[] bytes = new byte[2];
@@ -1360,13 +1362,13 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[8];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -1518,13 +1520,13 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[8];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -1655,13 +1657,13 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[8];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -1756,7 +1758,7 @@ public class ModbusClient {
     /**
      * Write Multiple Coils to Server
      *
-     * @param startingAddress Firts Address to write; Shifted by -1
+     * @param startingAddress First Address to write; Shifted by -1
      * @param values Values to write to Server
      * @throws de.re.easymodbus.exceptions.ModbusException
      * @throws UnknownHostException
@@ -1810,13 +1812,13 @@ public class ModbusClient {
 
             data[13 + (i / 8)] = singleCoilValue;
         }
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, data.length - 8, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[9 + byteCount];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 9 + byteCount);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -1911,19 +1913,20 @@ public class ModbusClient {
     /**
      * Write Multiple Registers to Server
      *
-     * @param startingAddress Firts Address to write; Shifted by -1
+     * @param startingAddress First Address to write; Shifted by -1
      * @param values Values to write to Server
      * @throws de.re.easymodbus.exceptions.ModbusException
      * @throws UnknownHostException
      * @throws SocketException
      * @throws SerialPortTimeoutException
      * @throws SerialPortException
+     * @throws ModbusTCPTester.FuncException
      */
     public void WriteMultipleRegisters(int startingAddress, int[] values) throws de.re.easymodbus.exceptions.ModbusException,
             UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         byte byteCount = (byte) (values.length * 2);
         byte[] quantityOfOutputs = toByteArray((int) values.length);
-        if (tcpClientSocket == null & !udpFlag) {
+        if (!serialFlag && tcpClientSocket == null & !udpFlag) {
             throw new de.re.easymodbus.exceptions.ConnectionException("connection error");
         }
         this.transactionIdentifier = toByteArray((int) 0x0001);
@@ -1951,13 +1954,13 @@ public class ModbusClient {
             data[13 + i * 2] = singleRegisterValue[1];
             data[14 + i * 2] = singleRegisterValue[0];
         }
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, data.length - 8, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[9 + byteCount];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 9 + byteCount);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -2048,9 +2051,9 @@ public class ModbusClient {
     /**
      * Read and Write Multiple Registers to Server
      *
-     * @param startingAddressRead Firts Address to Read; Shifted by -1
+     * @param startingAddressRead First Address to Read; Shifted by -1
      * @param quantityRead Number of Values to Read
-     * @param startingAddressWrite Firts Address to write; Shifted by -1
+     * @param startingAddressWrite First Address to write; Shifted by -1
      * @param values Values to write to Server
      * @return Register Values from Server
      * @throws de.re.easymodbus.exceptions.ModbusException
@@ -2106,13 +2109,13 @@ public class ModbusClient {
             data[17 + i * 2] = singleRegisterValue[1];
             data[18 + i * 2] = singleRegisterValue[0];
         }
-        if (this.serialflag) {
+        if (this.serialFlag) {
             crc = calculateCRC(data, data.length - 8, 6);
             data[data.length - 2] = crc[0];
             data[data.length - 1] = crc[1];
         }
         byte[] serialdata = null;
-        if (serialflag) {
+        if (serialFlag) {
             serialdata = new byte[13 + writeByteCountLocal];
             java.lang.System.arraycopy(data, 6, serialdata, 0, 13 + writeByteCountLocal);
             serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
@@ -2224,7 +2227,7 @@ public class ModbusClient {
      * @throws SerialPortException
      */
     public void Disconnect() throws IOException, SerialPortException {
-        if (!serialflag) {
+        if (!serialFlag) {
             if (inStream != null) {
                 inStream.close();
             }
@@ -2279,7 +2282,7 @@ public class ModbusClient {
      * @return if Client is connected to Server
      */
     public boolean isConnected() {
-        if (serialflag) {
+        if (serialFlag) {
             if (serialPort == null) {
                 return false;
             }
@@ -2377,11 +2380,11 @@ public class ModbusClient {
     }
 
     public void setSerialFlag(boolean serialflag) {
-        this.serialflag = serialflag;
+        this.serialFlag = serialflag;
     }
 
     public boolean getSerialFlag() {
-        return this.serialflag;
+        return this.serialFlag;
     }
 
     public void setUnitIdentifier(byte unitIdentifier) {
@@ -2522,7 +2525,7 @@ public class ModbusClient {
      * @param serialPort Name of the Serial port
      */
     public void setSerialPort(String serialPort) {
-        this.serialflag = true;
+        this.serialFlag = true;
         this.comPort = serialPort;
     }
 
@@ -2600,23 +2603,24 @@ public class ModbusClient {
      * checking for Modbus standard errors
      *
      * @param data
+     * @param functionCode
      * @throws FuncException
      */
-    public void checkModbusResponse(byte[] data) throws FuncException {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x01) {
+    public void checkModbusResponse(byte[] data, byte functionCode) throws FuncException {
+        if ((Byte.toUnsignedInt(data[7]) == (0x80 + functionCode)) && ((int) data[8]) == 0x01) {
 //            System.err.println("FunctionCodeNotSupportedException Throwed");
             throw new FuncException("FunctionCodeNotSupportedException Throwed");
         }
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x02) {
+        if ((Byte.toUnsignedInt(data[7]) == (0x80 + functionCode)) && ((int) data[8]) == 0x02) {
 //            System.err.println("Starting address invalid or starting adress + quantity invalid");
             throw new FuncException("Starting address invalid or starting adress + quantity invalid");
         }
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x03) {
+        if ((Byte.toUnsignedInt(data[7]) == (0x80 + functionCode)) && ((int) data[8]) == 0x03) {
 //                System.out.println("Quantity invalid");
             throw new FuncException("Quantity invalid");
         }
 //        if (((int) data[7]) == 0x83 & ((int) data[8]) == 0x04) {
-        if (Byte.toUnsignedInt(data[7]) == 0x83 & ((int) data[8]) == 0x04) {
+        if ((Byte.toUnsignedInt(data[7]) == (0x80 + functionCode)) && ((int) data[8]) == 0x04) {
 //            System.err.println("Error reading");
             throw new FuncException("Error reading");
         }
