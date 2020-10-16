@@ -57,6 +57,23 @@ public class ModbusTCPTester {
         return success;
     }
 
+    public boolean init(String port) {
+        modbusClient = new ModbusClient(port, 115200, 8);
+
+        try {
+            modbusClient.Connect();
+        } catch (IOException ex) {
+            Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ModbusTCPTester.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return modbusClient.isConnected();
+    }
+
     public void test(ArrayList<Parameter> array) {
         for (Parameter param : array) {
             //          if (param.address == 227) {

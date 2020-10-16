@@ -50,7 +50,7 @@ public class ModbusClient {
     private byte[] quantity = new byte[2];
     private boolean udpFlag = false;
     private boolean serialFlag = false;
-    private int connectTimeout = 1000;
+    private int connectTimeout = 3000;
     private InputStream inStream;
     private DataOutputStream outStream;
     public byte[] receiveData;
@@ -1175,7 +1175,7 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-
+        
         if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];

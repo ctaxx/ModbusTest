@@ -5,8 +5,6 @@
  */
 package ModbusTCPTester;
 
-import ModbusTCPTester.ModbusTCPTester;
-import ModbusTCPTester.FileUtils;
 import ModbusTCPTester.parameter.Parameter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -48,7 +47,9 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
     JButton openButton, testButton, saveButton;
     JTextField ipTextField;
     JFormattedTextField formattedTextField;
-    
+//    JComboBox serialTcpList;
+//    public static final String[] SERIAL_TCP_ITEMS = {"TCP", "serial"};
+
     public static final String EXTENSION = ".html";
 
     public static void main(String[] args) {
@@ -77,6 +78,10 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
 
+//        serialTcpList = new JComboBox(SERIAL_TCP_ITEMS);
+//        serialTcpList.addActionListener(this);
+//        northPanel.add(serialTcpList);
+
         openButton = new JButton("open");
         openButton.addActionListener(this);
         northPanel.add(openButton);
@@ -97,8 +102,19 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
         testButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean enabled = false;
                 tester = new ModbusTCPTester();
-                if (tester.init(ipTextField.getText(), 502)) {
+                
+                if (parser.protocol.matches("Modbus TCP")){
+                    enabled = tester.init(ipTextField.getText(), 502);
+                }
+                
+                if (parser.protocol.matches("Modbus RTU")){
+                    enabled = tester.init("COM5");
+                    System.out.println("enabled = " + enabled);
+                }
+                
+                if (enabled) {
                     tester.test(parser.getParameterArray());
                 }
                 saveButton.setEnabled(true);
@@ -178,6 +194,9 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
             }
 
         }
+//        if (e.getSource() == serialTcpList) {
+//            if (serialTcpList.getSelectedIndex() == 0);
+//        }
     }
 
 }
