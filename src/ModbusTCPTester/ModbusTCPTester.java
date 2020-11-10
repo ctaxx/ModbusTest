@@ -58,6 +58,9 @@ public class ModbusTCPTester {
     }
 
     public boolean init(String port) {
+        if ((modbusClient != null) && modbusClient.isConnected()) {
+            return true;
+        }
         modbusClient = new ModbusClient(port, 115200, 8);
 
         try {
@@ -85,7 +88,7 @@ public class ModbusTCPTester {
 
             int[] initialDataArray = {0};
             try {
-                if (param.funcToRead == 3) {
+                if (param.funcToRead == 1 || param.funcToRead == 3) {
                     initialDataArray = tryToReadAParam(param);
                     resultString.append("<td>" + "+" + "</td>");
                 } else {
@@ -220,7 +223,16 @@ public class ModbusTCPTester {
     public int[] tryToReadAParam(Parameter param) throws FuncException {
         int[] dataArray = null;
         try {
-            dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+            if (param.funcToRead == 1) {
+                boolean[] tmpArr = modbusClient.ReadCoils(param.address, param.numOfRegs);
+                dataArray = new int[tmpArr.length];
+                for (int i = 0; i < dataArray.length; i++) {
+                    dataArray[i] = tmpArr[i] ? 1 : 0;
+                }
+            }
+            if (param.funcToRead == 3) {
+                dataArray = modbusClient.ReadHoldingRegisters(param.address, param.numOfRegs);
+            }
             System.out.println(param.name + " address=" + param.address + " value=" + param.getValueString(dataArray));
             Thread.sleep(200);
 

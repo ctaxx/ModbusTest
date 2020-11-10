@@ -5,10 +5,7 @@
  */
 package ModbusTCPTester;
 
-import ModbusTCPTester.parameter.DateTime32Parameter;
-import ModbusTCPTester.parameter.EnumParameter;
-import ModbusTCPTester.parameter.Parameter;
-import ModbusTCPTester.parameter.UnsignedParameter;
+import ModbusTCPTester.parameter.*;
 import java.util.ArrayList;
 
 /**
@@ -114,23 +111,23 @@ public class ParserCSV {
             Parameter param = null;
             String dataType = myArray.get(i).get(7);
             if (dataType.contains("Unsigned")) {
-                param = new UnsignedParameter();   
+                param = new UnsignedParameter();
                 param.setPhysicalMaxValue(Integer.parseInt(dataType.replaceAll("\\D", "")));
-                
+
                 param.setFuncToWrite(myArray.get(i).get(6));
-                
-                if (myArray.get(i).get(8).matches("\\D")){
+
+                if (myArray.get(i).get(8).matches("\\D")) {
                     param.setLogicalMinValue(param.getPhysicalMinValue());
-                }else{
+                } else {
                     param.setLogicalMinValue(Long.parseLong(myArray.get(i).get(8)));
                 }
-                
-                if (myArray.get(i).get(9).matches("\\D")){
+
+                if (myArray.get(i).get(9).matches("\\D")) {
                     param.setLogicalMaxValue(param.getPhysicalMaxValue());
-                }else{
+                } else {
                     param.setLogicalMaxValue(Long.parseLong(myArray.get(i).get(9)));
                 }
-                
+
             } else if (dataType.contains("Enum")) {
                 param = new EnumParameter();
                 param.setPhysicalMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
@@ -140,7 +137,13 @@ public class ParserCSV {
                 param = new DateTime32Parameter();
 //            temporary stub
                 param.setFuncToWrite("-");
-            } else {
+            } else if (dataType.contains("bit")) {
+                param = new BitParameter();
+            }else if (dataType.contains("Float32")){
+                param = new Float32Parameter();
+    //            param.setFuncToWrite(myArray.get(i).get(6));
+            }
+            else {
                 param = new Parameter();
 //            temporary stub                
                 param.setFuncToWrite("-");

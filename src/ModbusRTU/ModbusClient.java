@@ -44,13 +44,13 @@ public class ModbusClient {
     private byte[] protocolIdentifier = new byte[2];
     private byte[] length = new byte[2];
     private byte[] crc = new byte[2];
-    private byte unitIdentifier = 1;
+    private byte unitIdentifier = 16;
     private byte functionCode;
     private byte[] startingAddress = new byte[2];
     private byte[] quantity = new byte[2];
     private boolean udpFlag = false;
     private boolean serialFlag = false;
-    private int connectTimeout = 3000;
+    private int connectTimeout = 600;
     private InputStream inStream;
     private DataOutputStream outStream;
     public byte[] receiveData;
@@ -119,7 +119,7 @@ public class ModbusClient {
             StoreLogData.getInstance().Store("Open Serial Port: " + comPort);
         }
     }
-    
+
     public ModbusClient(String serialPort, int baudrate, int dataBits) {
         System.out.println("EasyModbus Client Library");
         System.out.println("Copyright (c) Stefan Rossmann Engineering Solutions");
@@ -128,7 +128,7 @@ public class ModbusClient {
         System.out.println("Creative commons license");
         System.out.println("Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)");
         if (debug) {
-            StoreLogData.getInstance().Store("EasyModbus library initialized for Modbus-RTU, COM-Port: " 
+            StoreLogData.getInstance().Store("EasyModbus library initialized for Modbus-RTU, COM-Port: "
                     + serialPort + ", baudrate: " + baudrate);
         }
         this.baudrate = baudrate;
@@ -998,7 +998,7 @@ public class ModbusClient {
         byte[] serialData = null;
         if (serialFlag) {
             sendSerialData(data);
-            
+
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialData = new byte[256];
@@ -1061,9 +1061,9 @@ public class ModbusClient {
                 }
             }
         }
-        
+
         checkModbusResponse(data, functionCode);
-        
+
         for (int i = 0; i < quantity; i++) {
             int intData = (int) data[9 + i / 8];
             int mask = (int) Math.pow(2, (i % 8));
@@ -1175,7 +1175,7 @@ public class ModbusClient {
             this.crc[0],
             this.crc[1]
         };
-        
+
         if (this.serialFlag) {
             crc = calculateCRC(data, 6, 6);
             data[data.length - 2] = crc[0];
@@ -1185,7 +1185,7 @@ public class ModbusClient {
         if (serialFlag) {
 
             sendSerialData(data);
-            
+
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialData = new byte[256];
@@ -1972,10 +1972,17 @@ public class ModbusClient {
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialdata = new byte[256];
             int expectedlength = 8;
-            while (receivedUnitIdentifier != this.unitIdentifier & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
-                serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
-
-                receivedUnitIdentifier = serialdata[0];
+            try {
+                while (receivedUnitIdentifier != this.unitIdentifier
+                        & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
+                    for (int i = 0; i < expectedlength; i++) {
+                        //  serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
+                        serialdata[i] = serialPort.readBytes(1, this.connectTimeout)[0];
+                    }
+                    receivedUnitIdentifier = serialdata[0];
+                }
+            } catch (SerialPortTimeoutException ex) {
+                System.err.println("SerialPortTimeoutException");
             }
             if (receivedUnitIdentifier != this.unitIdentifier) {
                 data = new byte[256];
@@ -2038,8 +2045,10 @@ public class ModbusClient {
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x03) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x03) {
-            System.err.println("Quantity invalid");
-            throw new FuncException("Quantity invalid");
+            //          System.err.println("Quantity invalid");
+            System.out.println("Wrong value was sent");
+            //    throw new FuncException("Quantity invalid");
+            throw new FuncException("Wrong value was sent");
         }
 //        if (((int) (data[7] & 0xff)) == 0x90 & data[8] == 0x04) {
         if (((Byte.toUnsignedInt(data[7]) & 0xff)) == 0x90 & data[8] == 0x04) {
@@ -2628,8 +2637,9 @@ public class ModbusClient {
 
     /**
      * Sending request via serial
+     *
      * @param data
-     * @throws SerialPortException 
+     * @throws SerialPortException
      */
     public void sendSerialData(byte[] data) throws SerialPortException {
         byte[] serialdata = new byte[8];

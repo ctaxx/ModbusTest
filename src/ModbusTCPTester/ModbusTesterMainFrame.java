@@ -81,7 +81,6 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
 //        serialTcpList = new JComboBox(SERIAL_TCP_ITEMS);
 //        serialTcpList.addActionListener(this);
 //        northPanel.add(serialTcpList);
-
         openButton = new JButton("open");
         openButton.addActionListener(this);
         northPanel.add(openButton);
@@ -103,17 +102,18 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean enabled = false;
-                tester = new ModbusTCPTester();
-                
-                if (parser.protocol.matches("Modbus TCP")){
+                if (tester == null) {
+                    tester = new ModbusTCPTester();
+                }
+                if (parser.protocol.matches("Modbus TCP")) {
                     enabled = tester.init(ipTextField.getText(), 502);
                 }
-                
-                if (parser.protocol.matches("Modbus RTU")){
-                    enabled = tester.init("COM5");
+
+                if (parser.protocol.matches("Modbus RTU")) {
+                    enabled = tester.init("COM4");
                     System.out.println("enabled = " + enabled);
                 }
-                
+
                 if (enabled) {
                     tester.test(parser.getParameterArray());
                 }
