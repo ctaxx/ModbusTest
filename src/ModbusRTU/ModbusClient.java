@@ -15,7 +15,7 @@
  */
 package ModbusRTU;
 
-import ModbusTCPTester.FuncException;
+import ModbusTester.utils.FuncException;
 import de.re.easymodbus.modbusclient.*;
 import java.io.IOException;
 import java.net.*;
@@ -915,7 +915,7 @@ public class ModbusClient {
      * @throws ModbusException
      * @throws SocketException
      * @throws UnknownHostException
-     * @throws ModbusTCPTester.FuncException
+     * @throws ModbusTester.utils.FuncException
      */
     public boolean[] ReadCoils(int startingAddress, int quantity, String mqttBrokerAddress) throws MqttPersistenceException, MqttException, UnknownHostException, SocketException, ModbusException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
         boolean[] returnValue = this.ReadCoils(startingAddress, quantity);
@@ -955,7 +955,7 @@ public class ModbusClient {
      * @throws SocketException
      * @throws SerialPortTimeoutException
      * @throws SerialPortException
-     * @throws ModbusTCPTester.FuncException
+     * @throws ModbusTester.utils.FuncException
      */
     public boolean[] ReadCoils(int startingAddress, int quantity) throws de.re.easymodbus.exceptions.ModbusException,
             UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
@@ -1920,7 +1920,7 @@ public class ModbusClient {
      * @throws SocketException
      * @throws SerialPortTimeoutException
      * @throws SerialPortException
-     * @throws ModbusTCPTester.FuncException
+     * @throws ModbusTester.utils.FuncException
      */
     public void WriteMultipleRegisters(int startingAddress, int[] values) throws de.re.easymodbus.exceptions.ModbusException,
             UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException {
