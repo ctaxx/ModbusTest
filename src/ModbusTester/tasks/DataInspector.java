@@ -1,7 +1,7 @@
 /*
  * Collecting the data from one register and save it into .CSV file
  */
-package ModbusTester;
+package ModbusTester.tasks;
 
 import ModbusTester.utils.FuncException;
 import ModbusTester.utils.DataUtils;
@@ -75,7 +75,7 @@ public class DataInspector extends JFrame {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(ModbusTesterMainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -226,13 +226,13 @@ public class DataInspector extends JFrame {
             try {
                 modbusClient.Connect();
             } catch (IOException ex) {
-                Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
         }
         return success;
     }
@@ -246,13 +246,13 @@ public class DataInspector extends JFrame {
         try {
             modbusClient.Connect();
         } catch (IOException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
         }
         return modbusClient.isConnected();
     }

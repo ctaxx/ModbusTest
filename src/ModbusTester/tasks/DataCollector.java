@@ -1,12 +1,10 @@
 /*
  * Collecting the data from one register and save it into .CSV file
  */
-package ModbusTester;
+package ModbusTester.tasks;
 
 import ModbusTester.utils.FuncException;
 import ModbusRTU.ModbusClient;
-import ModbusTester.ReadWriteRegisters;
-import ModbusTester.ModbusTesterMainFrame;
 import de.re.easymodbus.datatypes.RegisterOrder;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.FlowLayout;
@@ -46,7 +44,7 @@ public class DataCollector extends JFrame {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                    Logger.getLogger(ModbusTesterMainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -105,13 +103,13 @@ public class DataCollector extends JFrame {
             try {
                 modbusClient.Connect();
             } catch (IOException ex) {
-                Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataCollector.class.getName()).log(Level.SEVERE, null, ex);
         }
         return success;
     }
