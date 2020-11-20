@@ -6,6 +6,9 @@
 package ModbusTester.parameter;
 
 //import lombok.Builder;
+
+import de.re.easymodbus.datatypes.RegisterOrder;
+
 /**
  *
  * @author s.bikov
@@ -31,6 +34,7 @@ public class Parameter {
     public long logicalMaxValue;
     
     public String attribute;
+    public RegisterOrder registerOrder = RegisterOrder.LowHigh;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";

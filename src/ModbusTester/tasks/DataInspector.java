@@ -147,7 +147,7 @@ public class DataInspector extends JFrame implements ActionListener {
                                     dataArray = modbusClient.ReadHoldingRegisters(parameter.address, parameter.numOfRegs);
                                     //          System.out.println(Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray)));
                                     //           currentValue = Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray));
-                                    panel.currentValue = ModbusClient.ConvertRegistersToFloat(dataArray, RegisterOrder.LowHigh);
+                                    panel.currentValue = ModbusClient.ConvertRegistersToFloat(dataArray, parameter.registerOrder);
                                     panel.currentField.setText(Float.toString(panel.currentValue));
                                     panel.maxValue = Float.max(panel.maxValue, panel.currentValue);
                                     panel.maxField.setText(Float.toString(panel.maxValue));
