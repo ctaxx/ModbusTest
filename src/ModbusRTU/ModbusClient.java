@@ -71,7 +71,7 @@ public class ModbusClient {
     private int[] mqttInputRegistersOldValues;
     private int[] mqttHoldingRegistersOldValues;
     private int numberOfRetries = 3;				//Number of retries in case of serial connection
-    private int baudrate = 9600;
+    private int baudrate = 115200;
     private Parity parity = Parity.None;
     private int dataBits = 8;
     private StopBits stopBits = StopBits.One;

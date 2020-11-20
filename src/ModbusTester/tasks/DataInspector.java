@@ -4,24 +4,30 @@
 package ModbusTester.tasks;
 
 import ModbusTester.utils.FuncException;
-import ModbusTester.utils.DataUtils;
 import ModbusRTU.ModbusClient;
+import ModbusTester.device.ParserCSV;
+import ModbusTester.parameter.Parameter;
+import ModbusTester.utils.FileUtils;
+import de.re.easymodbus.datatypes.RegisterOrder;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
 
@@ -29,10 +35,11 @@ import jssc.SerialPortTimeoutException;
  *
  * @author s.bikov
  */
-public class DataInspector extends JFrame {
+public class DataInspector extends JFrame implements ActionListener {
 
     ModbusClient modbusClient;
 
+    JButton openButton;
     JButton startButton;
     JButton stopButton;
     JButton setButton;
@@ -48,7 +55,13 @@ public class DataInspector extends JFrame {
     JTextField currErrorField;
     JTextField maxErrorField;
 
+    JPanel centerPanel;
+
     public static final String EOL = System.lineSeparator();
+
+    ArrayList<Parameter> parameterArray;
+    ArrayList<ParameterPanel> panelArray = new ArrayList();
+
     boolean isTesting = false;
     int[] dataArray;
 
@@ -58,13 +71,22 @@ public class DataInspector extends JFrame {
     float originValue = 0f;
     float currentValue = 0f;
     float minValue = Float.MAX_VALUE;
-    float maxValue =  Float.MIN_VALUE;
-    float range = 1050f;
+    float maxValue = Float.MIN_VALUE;
+    float range = 100f;
     float currErrorValue = 0f;
     float maxErrorValue = 0f;
 
     public static void main(String[] args) {
-        new DataInspector();
+        //  new DataInspector();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                DataInspector frame = new DataInspector();
+                frame.setDefaultCloseOperation(DataInspector.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+            }
+        });
     }
 
     public DataInspector() {
@@ -80,17 +102,21 @@ public class DataInspector extends JFrame {
             }
         }
 
-        setSize(300, 250);
+        setSize(500, 280);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         JPanel northPanel = new JPanel();
 
+        openButton = new JButton("open");
+        openButton.addActionListener(this);
+        northPanel.add(openButton);
+
         JButton initButton = new JButton("init");
         initButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                init("COM5");
+                init("COM4");
                 startButton.setEnabled(true);
             }
         });
@@ -106,35 +132,44 @@ public class DataInspector extends JFrame {
                 startButton.setEnabled(false);
                 responseCounter = 0;
                 errorCounter = 0;
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         while (isTesting) {
                             try {
-                           //     Thread.sleep(1);
-                                dataArray = modbusClient.ReadHoldingRegisters(0xb00, 2);
-                                //          System.out.println(Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray)));
-                                currentValue = Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray));
-                                currentField.setText(Float.toString(currentValue));
-                                maxValue = Float.max(maxValue, currentValue);
-                                maxField.setText(Float.toString(maxValue));
-                                minValue = Float.min(minValue, currentValue);
-                                minField.setText(Float.toString(minValue));
+                                ParameterPanel panel;
+                                Parameter parameter;
+                                for (int i = 0; i < parameterArray.size(); i++) {
+                                    parameter = parameterArray.get(i);
+                                    panel = panelArray.get(i);
+                                    //     Thread.sleep(1);
+                                    dataArray = modbusClient.ReadHoldingRegisters(parameter.address, parameter.numOfRegs);
+                                    //          System.out.println(Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray)));
+                                    //           currentValue = Float.intBitsToFloat(DataUtils.dataArrayToInt(dataArray));
+                                    panel.currentValue = ModbusClient.ConvertRegistersToFloat(dataArray, RegisterOrder.LowHigh);
+                                    panel.currentField.setText(Float.toString(panel.currentValue));
+                                    panel.maxValue = Float.max(panel.maxValue, panel.currentValue);
+                                    panel.maxField.setText(Float.toString(panel.maxValue));
+                                    panel.minValue = Float.min(panel.minValue, panel.currentValue);
+                                    panel.minField.setText(Float.toString(panel.minValue));
 
-                                currErrorValue = Math.abs(currentValue - originValue) / range * 100;
-                                System.out.println(String.format("%3.3f", currErrorValue));
-                                currErrorField.setText(Float.toString(currErrorValue));
+                                    panel.currErrorValue = Math.abs(panel.currentValue - panel.originValue) / panel.range * 100;
+                                    System.out.println(String.format("%3.3f", panel.currentValue));
+                                    panel.currErrorField.setText(Float.toString(panel.currErrorValue));
 
-                                maxErrorValue = Float.max((maxValue - originValue), (originValue - minValue)) / range * 100;
-                                maxErrorField.setText(Float.toString(maxErrorValue));
+                                    panel.maxErrorValue = Float.max((panel.maxValue - panel.originValue), (panel.originValue - panelArray.get(i).minValue)) / panelArray.get(i).range * 100;
+                                    panel.maxErrorField.setText(Float.toString(panel.maxErrorValue));
+
+                                }
 
                                 responseCounter++;
 
                             } catch (ModbusException | SerialPortException | SerialPortTimeoutException | IOException | FuncException ex) {
                                 Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
                                 errorCounter++;
-                     //       } catch (InterruptedException ex) {
-                      //          Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
+                                //       } catch (InterruptedException ex) {
+                                //          Logger.getLogger(DataInspector.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             responseLabel.setText("rx = " + Integer.toString(responseCounter));
                             errorsLabel.setText("errs = " + Integer.toString(errorCounter));
@@ -160,61 +195,21 @@ public class DataInspector extends JFrame {
 
         add(northPanel, BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(7, 2));
+        centerPanel = new JPanel();
 
-        centerPanel.add(new JLabel("origin"));
+        JPanel header = new HeaderPanel();
 
-        originField = new JTextField();
-        //     originField.setText(Float.toString(originValue));
-        centerPanel.add(originField);
-
-        setButton = new JButton("set");
-        setButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                originValue = currentValue;
-                maxValue = currentValue;
-                minValue = currentValue;
-                currErrorValue = 0f;
-                maxErrorValue = 0f;
-                originField.setText(Float.toString(originValue));
-            }
-        });
-        centerPanel.add(setButton);
-
-        centerPanel.add(new JLabel("max"));
-        maxField = new JTextField();
-        centerPanel.add(maxField);
-        centerPanel.add(new JLabel(""));
-
-        centerPanel.add(new JLabel("current"));
-        currentField = new JTextField();
-        centerPanel.add(currentField);
-        centerPanel.add(new JLabel(""));
-
-        centerPanel.add(new JLabel("min"));
-        minField = new JTextField();
-        centerPanel.add(minField);
-        centerPanel.add(new JLabel(""));
-
-        centerPanel.add(new JLabel("currErr"));
-        currErrorField = new JTextField();
-        centerPanel.add(currErrorField);
-        centerPanel.add(new JLabel("range=" + Float.toString(range)));
-
-        centerPanel.add(new JLabel("maxErr"));
-        maxErrorField = new JTextField();
-        centerPanel.add(maxErrorField);
-        centerPanel.add(new JLabel(""));
-
-        responseLabel = new JLabel("");
-        centerPanel.add(responseLabel);
-        errorsLabel = new JLabel("");
-        centerPanel.add(errorsLabel);
-        centerPanel.add(new JLabel(""));
+        centerPanel.add(header);
 
         add(centerPanel, BorderLayout.CENTER);
+        
+        JPanel southPanel = new JPanel();
+        responseLabel = new JLabel("");
+        southPanel.add(responseLabel);
+        errorsLabel = new JLabel("");
+        southPanel.add(errorsLabel);
+        add(southPanel, BorderLayout.SOUTH);
+        
         setVisible(true);
     }
 
@@ -277,4 +272,26 @@ public class DataInspector extends JFrame {
         }
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == openButton) {
+            FileFilter filter = new FileNameExtensionFilter("csv", "csv");
+            JFileChooser fileDialog = new JFileChooser("D:/");
+            fileDialog.setFileFilter(filter);
+            int ret = fileDialog.showDialog(this, "Open");
+
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                String str = FileUtils.fileReader(fileDialog.getSelectedFile());
+                ParserCSV parser = new ParserCSV(str);
+                parameterArray = parser.getParameterArray();
+                for (int i = 0; i < parameterArray.size(); i++) {
+                    panelArray.add(new ParameterPanel());
+                }
+                for (int i = 0; i < panelArray.size(); i++) {
+                    centerPanel.add(panelArray.get(i));
+                }
+
+            }
+        }
+    }
 }
