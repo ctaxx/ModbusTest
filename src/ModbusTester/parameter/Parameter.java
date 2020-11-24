@@ -34,7 +34,7 @@ public class Parameter {
     public long logicalMaxValue;
     
     public String attribute;
-    public RegisterOrder registerOrder = RegisterOrder.LowHigh;
+    public RegisterOrder registerOrder = RegisterOrder.HighLow;
 
     public String readResult = "R0 Ch0";
     public String writeResult = "W0";

@@ -155,11 +155,11 @@ public class DataInspector extends JFrame implements ActionListener {
                                     panel.minField.setText(Float.toString(panel.minValue));
 
                                     panel.currErrorValue = Math.abs(panel.currentValue - panel.originValue) / panel.range * 100;
-                                    System.out.println(String.format("%3.3f", panel.currentValue));
-                                    panel.currErrorField.setText(Float.toString(panel.currErrorValue));
+                           //         System.out.println(String.format("%3.3f", panel.currentValue));
+                                    panel.currErrorField.setText(String.format("%3.3f", panel.currErrorValue));
 
                                     panel.maxErrorValue = Float.max((panel.maxValue - panel.originValue), (panel.originValue - panelArray.get(i).minValue)) / panelArray.get(i).range * 100;
-                                    panel.maxErrorField.setText(Float.toString(panel.maxErrorValue));
+                                    panel.maxErrorField.setText(String.format("%3.3f", panel.maxErrorValue));
 
                                 }
 

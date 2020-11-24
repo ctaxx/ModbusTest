@@ -172,9 +172,8 @@ public class ParserCSV {
             parametersArrayList.add(param);
 
             if (myArray.get(i).size() >= 11) {
-                if ("HighLow".equals(myArray.get(i).get(10).trim())){
-                   param.registerOrder = RegisterOrder.HighLow;
-                    System.out.println("highlow");
+                if ("LowHigh".equals(myArray.get(i).get(10).trim())){
+                   param.registerOrder = RegisterOrder.LowHigh;
                 }
             }
 
