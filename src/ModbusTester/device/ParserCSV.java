@@ -11,6 +11,7 @@ import ModbusTester.parameter.Parameter;
 import ModbusTester.parameter.EnumParameter;
 import ModbusTester.parameter.DateTime32Parameter;
 import ModbusTester.parameter.BitParameter;
+import ModbusTester.parameter.String256;
 import de.re.easymodbus.datatypes.RegisterOrder;
 import java.util.ArrayList;
 
@@ -148,13 +149,15 @@ public class ParserCSV {
             } else if (dataType.contains("Float32")) {
                 param = new Float32Parameter();
                 //            param.setFuncToWrite(myArray.get(i).get(6));
+            } else if (dataType.contains("String256")) {
+                param = new String256();
             } else {
                 param = new Parameter();
 //            temporary stub                
                 param.setFuncToWrite("-");
             }
 
-            param.name = myArray.get(i).get(0);
+            param.name = myArray.get(i).get(1) + " - " + myArray.get(i).get(0);
             param.comment = myArray.get(i).get(1);
             param.address = Integer.parseInt(myArray.get(i).get(2));
             param.numOfRegs = Short.parseShort(myArray.get(i).get(4));
@@ -172,8 +175,8 @@ public class ParserCSV {
             parametersArrayList.add(param);
 
             if (myArray.get(i).size() >= 11) {
-                if ("LowHigh".equals(myArray.get(i).get(10).trim())){
-                   param.registerOrder = RegisterOrder.LowHigh;
+                if ("LowHigh".equals(myArray.get(i).get(10).trim())) {
+                    param.registerOrder = RegisterOrder.LowHigh;
                 }
             }
 

@@ -26,7 +26,7 @@ public class FXMLDocController implements Initializable {
     private Label label;
     
     @FXML
-    private FlowPane AnchorPane;
+    private FlowPane anchorPane;
 
     /**
      * Initializes the controller class.
@@ -43,7 +43,7 @@ public class FXMLDocController implements Initializable {
     private void handleButtonAction(ActionEvent event) {
         System.out.println("You clicked me!");
         //label.setText("Hello World!");
-
+        
         HBox hbox = new HBox();
         Button btn1 = new Button("1");
         Button btn2 = new Button("2");
@@ -51,7 +51,7 @@ public class FXMLDocController implements Initializable {
         Button btn4 = new Button("4");
         hbox.getChildren().addAll(btn1, btn2, btn3, btn4);
         
-        AnchorPane.getChildren().add(hbox);
+        anchorPane.getChildren().add(hbox);
     }
 
 }

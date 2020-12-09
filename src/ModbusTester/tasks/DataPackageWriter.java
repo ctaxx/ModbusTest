@@ -28,11 +28,15 @@ import jssc.SerialPortTimeoutException;
 public class DataPackageWriter extends JFrame{
     
     ModbusClient modbusClient;
-    int[] targetAddresses = {3000, 3001};
+    int[] targetAddresses = {570, 571};
     int [][] targetValues = {{500}, {500}};
+    int initAddress = 570;
+    int lastAddress = 593;
+    int[] valueToWrite = {1};
     
     public DataPackageWriter() {
         super("DataPackageWriter");
+        System.nanoTime();
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
             if ("Nimbus".equals(info.getName())) {
                 try {
@@ -61,9 +65,11 @@ public class DataPackageWriter extends JFrame{
         JButton startButton = new JButton("Start");
         startButton.addActionListener((ActionEvent e) -> {
             try {
-                for (int i = 0; i < targetAddresses.length; i++) {
+//                for (int i = 0; i < targetAddresses.length; i++) {
+                for (int i = initAddress; i <= lastAddress; i++) {    
                     Thread.sleep(450);
-                    modbusClient.WriteMultipleRegisters(targetAddresses[i], targetValues[i]);
+//                    modbusClient.WriteMultipleRegisters(targetAddresses[i], targetValues[i]);
+                    modbusClient.WriteMultipleRegisters(i, valueToWrite);
                 }
                 System.out.println("done");
             } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {
@@ -80,7 +86,7 @@ public class DataPackageWriter extends JFrame{
     }
     
     public boolean init() {
-        modbusClient = new ModbusClient("10.6.18.38", 502);
+        modbusClient = new ModbusClient("10.6.18.35", 502);
         boolean success = modbusClient.Available(2000);
         System.out.println("Available " + success);
         if (success) {
@@ -91,7 +97,7 @@ public class DataPackageWriter extends JFrame{
             }
         }
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
