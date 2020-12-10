@@ -5,7 +5,9 @@
  */
 package ModbusTester;
 
+import ModbusTester.tasks.DataPackageWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * FXML Controller class
@@ -24,9 +27,11 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private Label label;
-    
+
     @FXML
     private FlowPane anchorPane;
+
+    ArrayList<Button> buttons;
 
     /**
      * Initializes the controller class.
@@ -42,16 +47,25 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleButtonAction(ActionEvent event) {
         System.out.println("You clicked me!");
-        //label.setText("Hello World!");
-        
-        HBox hbox = new HBox();
-        Button btn1 = new Button("1");
-        Button btn2 = new Button("2");
-        Button btn3 = new Button("3");
-        Button btn4 = new Button("4");
-        hbox.getChildren().addAll(btn1, btn2, btn3, btn4);
-        
-        anchorPane.getChildren().add(hbox);
+        buttons = new ArrayList<>();
+        VBox vBox = new VBox();
+        DataPackageWriter dataPackageWriter = new DataPackageWriter(true);
+        dataPackageWriter.initItems();
+        for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
+            PackageItem item = dataPackageWriter.itemArrayList.get(i);
+            Button tmpButton = new Button(item.name);
+//            System.out.println("packageItem name is " + item.name);
+            int [] tmpArr = item.paramArray.stream().mapToInt(e -> (int)e.address).toArray();
+            int [] tmpVal = item.paramArray.stream().mapToInt(e -> (int)e.value).toArray();
+            tmpButton.setOnAction(e -> {System.out.println(item.name + " clicked");
+                                        dataPackageWriter.writeData(tmpArr, tmpVal);});
+            buttons.add(tmpButton);
+        }
+        buttons.stream().forEach((b) -> {
+            vBox.getChildren().add(b);
+        });
+
+        anchorPane.getChildren().add(vBox);
     }
 
 }

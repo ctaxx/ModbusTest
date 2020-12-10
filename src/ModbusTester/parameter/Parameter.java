@@ -17,8 +17,8 @@ import de.re.easymodbus.datatypes.RegisterOrder;
 public class Parameter {
 
 //    static final long MAX_UNSIGNED32_VALUE = Integer.MAX_VALUE * 2;
-    static final String MAX_UNSIGNED16_VALUE = "";
-    static final String MAX_UNSIGNED32_VALUE = "4294967295";
+//    static final String MAX_UNSIGNED16_VALUE = "";
+//    static final String MAX_UNSIGNED32_VALUE = "4294967295";
 
     public String name;
     public String comment;

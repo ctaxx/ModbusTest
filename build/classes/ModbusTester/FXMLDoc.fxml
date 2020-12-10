@@ -9,7 +9,7 @@
 
 <FlowPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
     <children>
-        <Button layoutX="126" layoutY="90" text="Click Me!" onAction="#handleButtonAction" fx:id="button" />
+        <Button layoutX="126" layoutY="90" text="Add package!" onAction="#handleButtonAction" fx:id="button" />
         <TableView fx:id = "table"/>
     </children>
     <stylesheets>
