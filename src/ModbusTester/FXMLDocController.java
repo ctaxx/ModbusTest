@@ -50,6 +50,7 @@ public class FXMLDocController implements Initializable {
         buttons = new ArrayList<>();
         VBox vBox = new VBox();
         DataPackageWriter dataPackageWriter = new DataPackageWriter(true);
+        
         dataPackageWriter.initItems();
         for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
             PackageItem item = dataPackageWriter.itemArrayList.get(i);
@@ -58,7 +59,9 @@ public class FXMLDocController implements Initializable {
             int [] tmpArr = item.paramArray.stream().mapToInt(e -> (int)e.address).toArray();
             int [] tmpVal = item.paramArray.stream().mapToInt(e -> (int)e.value).toArray();
             tmpButton.setOnAction(e -> {System.out.println(item.name + " clicked");
-                                        dataPackageWriter.writeData(tmpArr, tmpVal);});
+                                        dataPackageWriter.init();
+                                        dataPackageWriter.writeData(tmpArr, tmpVal);
+                                        dataPackageWriter.disconnect();});
             buttons.add(tmpButton);
         }
         buttons.stream().forEach((b) -> {

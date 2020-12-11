@@ -45,7 +45,7 @@ public class DataPackageWriter extends JFrame {
     int[][] targetValues = {{500}, {500}};
     int initAddress = 570;
     int lastAddress = 593;
-    int[] valueToWrite = {1};
+    int[] valueToWrite = {0};
 
     public DataPackageWriter() {
         super("DataPackageWriter");
@@ -77,7 +77,7 @@ public class DataPackageWriter extends JFrame {
 
         JButton startButton = new JButton("Start");
         startButton.addActionListener((ActionEvent e) -> {
-//            writeData(initAddress, valueToWrite);
+            writeData(new int [] {0}, new int [] {0});
             System.out.println("unsupported");
         });
         add(startButton);
@@ -91,7 +91,7 @@ public class DataPackageWriter extends JFrame {
 
     public boolean init() {
         modbusClient = new ModbusClient("10.6.18.35", 502);
-        boolean success = modbusClient.Available(2000);
+        boolean success = modbusClient.Available(1500);
         System.out.println("Available " + success);
         if (success) {
             try {
@@ -143,22 +143,31 @@ public class DataPackageWriter extends JFrame {
 
     public void writeData(int[] address, int[] valueToWrite) {
         try {
-//            for (int i = 0; i < address.length; i++) {
-//                Thread.sleep(450);
-//                int [] tmpIntArr = new int[1];
-//                tmpIntArr[0] = 0;
-//                modbusClient.WriteMultipleRegisters(570, tmpIntArr);
-//            }
-            for (int i = initAddress; i <= lastAddress; i++) {
-                Thread.sleep(450);
-                modbusClient.WriteMultipleRegisters(i, valueToWrite);
+            for (int i = 0; i < address.length; i++) {
+                Thread.sleep(350);
+                System.out.println("address is " + address[i]);
+                System.out.println("value is " + valueToWrite[i]);
+                modbusClient.WriteMultipleRegisters(address[i], new int []{valueToWrite[i]});
+//                modbusClient.WriteMultipleRegisters(570, new int []{1});
             }
+//            for (int i = initAddress; i <= lastAddress; i++) {
+//                Thread.sleep(450);
+//                modbusClient.WriteMultipleRegisters(i, this.valueToWrite);
+//            }
             System.out.println("done");
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SocketException ex) {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void disconnect(){
+        try {
+            modbusClient.Disconnect();
+        } catch (IOException | SerialPortException ex) {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
