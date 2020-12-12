@@ -1,5 +1,5 @@
 /*
- * (c) Stefan Roﬂmann
+ * (c) Stefan Rossmann
  *	This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 /**
  *
- * @author Stefan Roﬂmann
+ * @author Stefan Rossmann
  */
 @SuppressWarnings("serial")
 public class EasyModbusTCPClientExampleGUI extends javax.swing.JFrame  

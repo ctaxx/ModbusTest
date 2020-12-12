@@ -9,7 +9,10 @@
 
 <FlowPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
     <children>
-        <Button layoutX="126" layoutY="90" text="Add package!" onAction="#handleButtonAction" fx:id="button" />
+        <VBox prefWidth="150.0" >
+        <Button layoutX="126" layoutY="90" text="Add package!" prefWidth="150.0"  onAction="#handleButtonAction" fx:id="button" />
+        <Button text="Устройство" prefWidth="150.0"  fx:id="deviceButton"/>
+        </VBox>
         <TableView fx:id = "table"/>
     </children>
     <stylesheets>

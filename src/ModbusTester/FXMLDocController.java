@@ -15,7 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
@@ -24,6 +23,8 @@ import javafx.scene.layout.VBox;
  * @author s.bikov
  */
 public class FXMLDocController implements Initializable {
+    
+    private static final double ITEMS_WIDTH = 150.0;
 
     @FXML
     private Label label;
@@ -49,19 +50,21 @@ public class FXMLDocController implements Initializable {
         System.out.println("You clicked me!");
         buttons = new ArrayList<>();
         VBox vBox = new VBox();
-        DataPackageWriter dataPackageWriter = new DataPackageWriter(true);
+        vBox.setPrefWidth(ITEMS_WIDTH);
+        DataPackageWriter dataPackageWriter = new DataPackageWriter();
         
-        dataPackageWriter.initItems();
         for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
             PackageItem item = dataPackageWriter.itemArrayList.get(i);
             Button tmpButton = new Button(item.name);
+            tmpButton.setMinWidth(ITEMS_WIDTH);
 //            System.out.println("packageItem name is " + item.name);
             int [] tmpArr = item.paramArray.stream().mapToInt(e -> (int)e.address).toArray();
             int [] tmpVal = item.paramArray.stream().mapToInt(e -> (int)e.value).toArray();
             tmpButton.setOnAction(e -> {System.out.println(item.name + " clicked");
                                         dataPackageWriter.init();
                                         dataPackageWriter.writeData(tmpArr, tmpVal);
-                                        dataPackageWriter.disconnect();});
+                                        dataPackageWriter.disconnect();}
+            );
             buttons.add(tmpButton);
         }
         buttons.stream().forEach((b) -> {
