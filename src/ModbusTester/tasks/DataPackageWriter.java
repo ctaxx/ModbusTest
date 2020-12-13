@@ -97,8 +97,6 @@ public class DataPackageWriter extends JFrame {
         try {
             for (int i = 0; i < address.length; i++) {
                 Thread.sleep(350);
-                System.out.println("address is " + address[i]);
-                System.out.println("value is " + valueToWrite[i]);
                 modbusClient.WriteMultipleRegisters(address[i], new int[]{valueToWrite[i]});
             }
             System.out.println("done");

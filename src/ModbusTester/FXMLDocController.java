@@ -14,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -23,14 +22,17 @@ import javafx.scene.layout.VBox;
  * @author s.bikov
  */
 public class FXMLDocController implements Initializable {
-    
+
     private static final double ITEMS_WIDTH = 150.0;
 
     @FXML
     private Label label;
 
     @FXML
-    private FlowPane anchorPane;
+    private VBox anchorPane;
+
+    @FXML
+    private VBox itemsVBox;
 
     ArrayList<Button> buttons;
 
@@ -45,33 +47,46 @@ public class FXMLDocController implements Initializable {
         // TODO
     }
 
+    public void initialize() {
+
+    }
+
     @FXML
     private void handleButtonAction(ActionEvent event) {
         System.out.println("You clicked me!");
+        if (buttons != null) {
+            return;
+        }
         buttons = new ArrayList<>();
-        VBox vBox = new VBox();
-        vBox.setPrefWidth(ITEMS_WIDTH);
+//        VBox itemsVBox = new VBox();
+        itemsVBox.setPrefWidth(ITEMS_WIDTH);
         DataPackageWriter dataPackageWriter = new DataPackageWriter();
-        
+
         for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
             PackageItem item = dataPackageWriter.itemArrayList.get(i);
             Button tmpButton = new Button(item.name);
             tmpButton.setMinWidth(ITEMS_WIDTH);
 //            System.out.println("packageItem name is " + item.name);
-            int [] tmpArr = item.paramArray.stream().mapToInt(e -> (int)e.address).toArray();
-            int [] tmpVal = item.paramArray.stream().mapToInt(e -> (int)e.value).toArray();
-            tmpButton.setOnAction(e -> {System.out.println(item.name + " clicked");
-                                        dataPackageWriter.init();
-                                        dataPackageWriter.writeData(tmpArr, tmpVal);
-                                        dataPackageWriter.disconnect();}
+            int[] tmpArr = item.paramArray.stream().mapToInt(e -> (int) e.address).toArray();
+            int[] tmpVal = item.paramArray.stream().mapToInt(e -> (int) e.value).toArray();
+            tmpButton.setOnAction(e -> {
+                System.out.println(item.name + " clicked");
+                dataPackageWriter.init();
+                dataPackageWriter.writeData(tmpArr, tmpVal);
+                dataPackageWriter.disconnect();
+            }
             );
             buttons.add(tmpButton);
         }
         buttons.stream().forEach((b) -> {
-            vBox.getChildren().add(b);
+            itemsVBox.getChildren().add(b);
         });
 
-        anchorPane.getChildren().add(vBox);
+//        anchorPane.getChildren().add(itemsVBox);
     }
 
+    @FXML
+    private void handleAddDeviceAction(ActionEvent event) {
+        System.out.println("adding device");
+    }
 }
