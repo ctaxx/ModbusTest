@@ -68,7 +68,7 @@ public class FXMLDocController implements Initializable {
             tmpButton.setMinWidth(ITEMS_WIDTH);
 //            System.out.println("packageItem name is " + item.name);
             int[] tmpArr = item.paramArray.stream().mapToInt(e -> (int) e.address).toArray();
-            int[] tmpVal = item.paramArray.stream().mapToInt(e -> (int) e.value).toArray();
+            long[] tmpVal = item.paramArray.stream().mapToLong(e -> (long) e.value).toArray();
             tmpButton.setOnAction(e -> {
                 System.out.println(item.name + " clicked");
                 dataPackageWriter.init();

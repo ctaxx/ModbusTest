@@ -8,6 +8,7 @@ package ModbusTester.tasks;
 import ModbusRTU.ModbusClient;
 import ModbusTester.PackageItem;
 import ModbusTester.parameter.TmpParam;
+import ModbusTester.utils.DataUtils;
 import ModbusTester.utils.FuncException;
 import com.google.gson.JsonArray;
 import de.re.easymodbus.exceptions.ModbusException;
@@ -82,7 +83,7 @@ public class DataPackageWriter extends JFrame {
                 for (int i = 0; i < registersJsonArray.size(); i++) {
                     JsonObject registerJson = registersJsonArray.get(i).getAsJsonObject();
                     packageItem.paramArray.add(new TmpParam(registerJson.get("address").getAsInt(),
-                            registerJson.get("value").getAsInt()));
+                            registerJson.get("value").getAsLong()));
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -93,11 +94,13 @@ public class DataPackageWriter extends JFrame {
         return packageItems;
     }
 
-    public void writeData(int[] address, int[] valueToWrite) {
+    public void writeData(int[] address, long []valueToWrite) {
         try {
             for (int i = 0; i < address.length; i++) {
                 Thread.sleep(350);
-                modbusClient.WriteMultipleRegisters(address[i], new int[]{valueToWrite[i]});
+                System.out.println(address[i] + "/" + Long.toHexString(valueToWrite[i]));
+//                modbusClient.WriteMultipleRegisters(address[i], new int[]{valueToWrite[i]});
+                modbusClient.WriteMultipleRegisters(address[i], DataUtils.ConvertLongToRegisters(valueToWrite[i]));
             }
             System.out.println("done");
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {

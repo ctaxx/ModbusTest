@@ -11,9 +11,9 @@ package ModbusTester.parameter;
  */
 public class TmpParam {
     public int address;
-    public int value;
+    public long value;
 
-    public TmpParam(int address, int value) {
+    public TmpParam(int address, long value) {
         this.address = address;
         this.value = value;
     }
