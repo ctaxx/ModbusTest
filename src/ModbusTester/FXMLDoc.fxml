@@ -10,12 +10,12 @@
 <VBox fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
     <children>
         <HBox prefWidth="150.0" >
-            <Button layoutX="126" layoutY="90" text="Add item" prefWidth="150.0"  onAction="#handleButtonAction" fx:id="button" />
+            <Button layoutX="126" layoutY="90" text="Add items" prefWidth="150.0"  onAction="#handleButtonAction" fx:id="button" />
             <Button text="Устройство" prefWidth="150.0"  onAction="#handleAddDeviceAction"  fx:id="deviceButton"/>
             <TextField prefColumnCount="12" fx:id="ipField"/>
         </HBox>
-        <TableView fx:id = "table"/>
-        <VBox prefWidth="150.0" spacing="2"  fx:id="itemsVBox"/> 
+        <!--<TableView fx:id = "table"/>-->
+        <VBox prefWidth="180.0" spacing="2"  fx:id="itemsVBox"/> 
     </children>
     <stylesheets>
         <URL value="@fxmldoc.css"/>

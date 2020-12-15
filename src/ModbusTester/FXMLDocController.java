@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
  */
 public class FXMLDocController implements Initializable {
 
-    private static final double ITEMS_WIDTH = 150.0;
+    private static final double ITEMS_WIDTH = 180.0;
 
     @FXML
     private Label label;
