@@ -50,4 +50,9 @@ public class EnumParameter extends Parameter {
     public boolean isLogicalMatchesPhysical(){
         return false;
     }
+    
+    @Override
+    public int [] prepareRegisterData(long data){
+        return DataUtils.ConvertARegister(data);
+    }
 }

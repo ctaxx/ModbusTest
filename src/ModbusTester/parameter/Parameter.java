@@ -7,6 +7,7 @@ package ModbusTester.parameter;
 
 //import lombok.Builder;
 
+import ModbusTester.utils.DataUtils;
 import de.re.easymodbus.datatypes.RegisterOrder;
 
 /**
@@ -36,8 +37,8 @@ public class Parameter {
     public String attribute;
     public RegisterOrder registerOrder = RegisterOrder.HighLow;
 
-    public String readResult = "R0 Ch0";
-    public String writeResult = "W0";
+//    public String readResult = "R0 Ch0";
+//    public String writeResult = "W0";
 
     public void setPhysicalMaxValue(long physicalMaxValue) {
         this.physicalMaxValue = physicalMaxValue;
@@ -146,5 +147,9 @@ public class Parameter {
     
     public boolean isLogicalMatchesPhysical(){
         return true;
+    }
+    
+    public int [] prepareRegisterData(long data){
+        return DataUtils.ConvertLongToRegisters(data);
     }
 }

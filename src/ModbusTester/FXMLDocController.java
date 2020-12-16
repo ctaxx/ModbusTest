@@ -5,7 +5,9 @@
  */
 package ModbusTester;
 
+import ModbusTester.device.ParserCSV;
 import ModbusTester.tasks.DataPackageWriter;
+import ModbusTester.utils.FileUtils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -14,7 +16,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 /**
  * FXML Controller class
@@ -24,6 +28,10 @@ import javafx.scene.layout.VBox;
 public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
+    DataPackageWriter dataPackageWriter = new DataPackageWriter();
+    
+    @FXML
+    private TextField ipField;
 
     @FXML
     private Label label;
@@ -60,7 +68,7 @@ public class FXMLDocController implements Initializable {
         buttons = new ArrayList<>();
 //        VBox itemsVBox = new VBox();
         itemsVBox.setPrefWidth(ITEMS_WIDTH);
-        DataPackageWriter dataPackageWriter = new DataPackageWriter();
+//        DataPackageWriter dataPackageWriter = new DataPackageWriter();
 
         for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
             PackageItem item = dataPackageWriter.itemArrayList.get(i);
@@ -88,5 +96,12 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleAddDeviceAction(ActionEvent event) {
         System.out.println("adding device");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open file");
+        // TODO
+        String str = FileUtils.fileReader(fileChooser.showOpenDialog(anchorPane.getScene().getWindow()));
+        ParserCSV parser = new ParserCSV(str);
+        dataPackageWriter.setDevice(parser.getDevice());
+        ipField.setText(parser.getDevice().ipAddress);
     }
 }

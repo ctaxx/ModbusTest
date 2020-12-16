@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusTester.device;
+package ModbusTester.parameter;
 
 /**
  *
  * @author s.bikov
  */
-public class DeviceForTest {
-    
+public class String256Parameter extends Parameter{
+    @Override
+    public String getRange(){
+        return "String256";
+    }
 }

@@ -11,7 +11,7 @@ import ModbusTester.parameter.Parameter;
 import ModbusTester.parameter.EnumParameter;
 import ModbusTester.parameter.DateTime32Parameter;
 import ModbusTester.parameter.BitParameter;
-import ModbusTester.parameter.String256;
+import ModbusTester.parameter.String256Parameter;
 import de.re.easymodbus.datatypes.RegisterOrder;
 import java.util.ArrayList;
 
@@ -55,24 +55,6 @@ public class ParserCSV {
         return yArrayList;
     }
 
-    public void printArray() {
-        for (ArrayList<String> a : this.myArray) {
-            for (String s : a) {
-                System.out.print(s + "");
-            }
-            System.out.println();
-        }
-    }
-
-    public static void printArray(ArrayList<ArrayList<String>> array) {
-        for (ArrayList<String> a : array) {
-            for (String s : a) {
-                System.out.print(s + "");
-            }
-            System.out.println();
-        }
-    }
-
     public String arrayToString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < this.myArray.size(); i++) {
@@ -97,10 +79,6 @@ public class ParserCSV {
 
     public void restoreState(ArrayList<ArrayList<String>> array) {
         this.myArray = array;
-    }
-
-    public ArrayList<ArrayList<String>> getMyArray() {
-        return myArray;
     }
 
     public boolean isCorrectCoords(int x, int y) {
@@ -150,7 +128,7 @@ public class ParserCSV {
                 param = new Float32Parameter();
                 //            param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("String256")) {
-                param = new String256();
+                param = new String256Parameter();
             } else {
                 param = new Parameter();
 //            temporary stub                
@@ -183,10 +161,13 @@ public class ParserCSV {
         }
         return parametersArrayList;
     }
-
-    public void printParameterArray() {
-        for (Parameter param : parameterArray) {
-            System.out.println(param.toString());
-        }
+    
+    public Device getDevice(){
+        Device device = new Device();
+        device.parametersArray = this.parameterArray;
+        device.ipAddress = this.currentIP;
+//        device.port =
+        device.protocol = this.protocol;
+        return device;
     }
 }

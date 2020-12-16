@@ -88,4 +88,12 @@ public class UnsignedParameter extends Parameter {
     public boolean isLogicalMatchesPhysical() {
         return ((logicalMinValue == physicalMinValue) && (logicalMaxValue == physicalMaxValue));
     }
+    
+    @Override
+    public int [] prepareRegisterData(long data){
+        if (numOfRegs == 1) {
+            return DataUtils.ConvertARegister(data);
+        }
+        return DataUtils.ConvertLongToRegisters(data);
+    }
 }

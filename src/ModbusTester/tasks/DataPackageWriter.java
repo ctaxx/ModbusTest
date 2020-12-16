@@ -7,6 +7,7 @@ package ModbusTester.tasks;
 
 import ModbusRTU.ModbusClient;
 import ModbusTester.PackageItem;
+import ModbusTester.device.Device;
 import ModbusTester.parameter.TmpParam;
 import ModbusTester.utils.DataUtils;
 import ModbusTester.utils.FuncException;
@@ -44,9 +45,14 @@ public class DataPackageWriter extends JFrame {
     int initAddress = 570;
     int lastAddress = 593;
     int[] valueToWrite = {0};
+    Device device;
 
     public DataPackageWriter() {
         itemArrayList = readJson(ITEMS_PATH);
+    }
+    
+    public void setDeviceParameters(){
+        
     }
 
     public boolean init() {
@@ -97,10 +103,10 @@ public class DataPackageWriter extends JFrame {
     public void writeData(int[] address, long []valueToWrite) {
         try {
             for (int i = 0; i < address.length; i++) {
-                Thread.sleep(350);
+                Thread.sleep(300);
                 System.out.println(address[i] + "/" + Long.toHexString(valueToWrite[i]));
-//                modbusClient.WriteMultipleRegisters(address[i], new int[]{valueToWrite[i]});
-                modbusClient.WriteMultipleRegisters(address[i], DataUtils.ConvertLongToRegisters(valueToWrite[i]));
+//                modbusClient.WriteMultipleRegisters(address[i], DataUtils.ConvertLongToRegisters(valueToWrite[i]));
+                modbusClient.WriteMultipleRegisters(address[i], device.getParameterByAddress(address[i]).prepareRegisterData(valueToWrite[i]));
             }
             System.out.println("done");
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {
@@ -118,5 +124,9 @@ public class DataPackageWriter extends JFrame {
         } catch (IOException | SerialPortException ex) {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void setDevice(Device device){
+        this.device = device;
     }
 }

@@ -171,7 +171,7 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                 tableModel.setRowCount(0);
 
                 for (Parameter param : parser.getParameterArray()) {
-                    Object obj[] = {param.name, param.address, param.readResult, param.writeResult};
+                    Object obj[] = {param.name, param.address, "stub", "stub"};
                     tableModel.addRow(obj);
                 }
 
@@ -183,8 +183,8 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                             try {
                                 tmpArray = parser.getParameterArray();
                                 for (int i = 0; i < tmpArray.size(); i++) {
-                                    tableModel.setValueAt(tmpArray.get(i).readResult, i, 2);
-                                    tableModel.setValueAt(tmpArray.get(i).writeResult, i, 3);
+                                    tableModel.setValueAt("stub", i, 2);
+                                    tableModel.setValueAt("stub", i, 3);
                                 }
                                 Thread.sleep(200);
                             } catch (InterruptedException ex) {
