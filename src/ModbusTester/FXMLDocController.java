@@ -8,14 +8,21 @@ package ModbusTester;
 import ModbusTester.device.ParserCSV;
 import ModbusTester.tasks.DataPackageWriter;
 import ModbusTester.utils.FileUtils;
+import static java.lang.Thread.sleep;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -28,8 +35,9 @@ import javafx.stage.FileChooser;
 public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
-    DataPackageWriter dataPackageWriter = new DataPackageWriter();
-    
+    public DataPackageWriter dataPackageWriter = new DataPackageWriter();
+    private boolean locked = false;
+
     @FXML
     private TextField ipField;
 
@@ -42,6 +50,9 @@ public class FXMLDocController implements Initializable {
     @FXML
     private VBox itemsVBox;
 
+    @FXML
+    private ProgressBar taskProgress;
+
     ArrayList<Button> buttons;
 
     /**
@@ -53,6 +64,7 @@ public class FXMLDocController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        taskProgress.setProgress(0.0);
     }
 
     public void initialize() {
@@ -65,23 +77,47 @@ public class FXMLDocController implements Initializable {
         if (buttons != null) {
             return;
         }
+//        DoubleProperty barUpdater = new SimpleDoubleProperty(dataPackageWriter.progress);
+//        System.out.println("for binding" + dataPackageWriter.progress);
+//        taskProgress.progressProperty().bind(barUpdater);
+
+        Thread progressUpdater = new Thread(() -> {
+            while (true) {
+//                Platform.runLater(() -> taskProgress.setProgress(dataPackageWriter.progress));
+                taskProgress.setProgress(dataPackageWriter.progress);
+                try {
+                    sleep(500);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(FXMLDocController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        progressUpdater.setDaemon(true);
+        progressUpdater.start();
         buttons = new ArrayList<>();
-//        VBox itemsVBox = new VBox();
         itemsVBox.setPrefWidth(ITEMS_WIDTH);
-//        DataPackageWriter dataPackageWriter = new DataPackageWriter();
 
         for (int i = 0; i < dataPackageWriter.itemArrayList.size(); i++) {
             PackageItem item = dataPackageWriter.itemArrayList.get(i);
             Button tmpButton = new Button(item.name);
             tmpButton.setMinWidth(ITEMS_WIDTH);
-//            System.out.println("packageItem name is " + item.name);
             int[] tmpArr = item.paramArray.stream().mapToInt(e -> (int) e.address).toArray();
             long[] tmpVal = item.paramArray.stream().mapToLong(e -> (long) e.value).toArray();
             tmpButton.setOnAction(e -> {
+                if (locked) {
+                    return;
+                }
+                locked = true;
+                taskProgress.setVisible(true);
                 System.out.println(item.name + " clicked");
                 dataPackageWriter.init();
-                dataPackageWriter.writeData(tmpArr, tmpVal);
-                dataPackageWriter.disconnect();
+                
+                new Thread(() -> {
+                    dataPackageWriter.writeData(tmpArr, tmpVal);
+                    dataPackageWriter.disconnect();
+                    locked = false;
+                    taskProgress.setVisible(false);
+                }).start();
             }
             );
             buttons.add(tmpButton);
@@ -104,4 +140,5 @@ public class FXMLDocController implements Initializable {
         dataPackageWriter.setDevice(parser.getDevice());
         ipField.setText(parser.getDevice().ipAddress);
     }
+
 }

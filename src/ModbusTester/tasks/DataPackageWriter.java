@@ -9,7 +9,6 @@ import ModbusRTU.ModbusClient;
 import ModbusTester.PackageItem;
 import ModbusTester.device.Device;
 import ModbusTester.parameter.TmpParam;
-import ModbusTester.utils.DataUtils;
 import ModbusTester.utils.FuncException;
 import com.google.gson.JsonArray;
 import de.re.easymodbus.exceptions.ModbusException;
@@ -46,13 +45,14 @@ public class DataPackageWriter extends JFrame {
     int lastAddress = 593;
     int[] valueToWrite = {0};
     Device device;
+    public double progress = 0.0;
 
     public DataPackageWriter() {
         itemArrayList = readJson(ITEMS_PATH);
     }
-    
-    public void setDeviceParameters(){
-        
+
+    public void setDeviceParameters() {
+
     }
 
     public boolean init() {
@@ -78,13 +78,13 @@ public class DataPackageWriter extends JFrame {
         ArrayList<PackageItem> packageItems = new ArrayList<>();
         try {
             List<String> bytes = Files.readAllLines(Paths.get(path), Charset.forName(ENCODING));
-            
+
             for (String s : bytes) {
                 JsonObject obj = new JsonParser().parse(s).getAsJsonObject();
                 System.out.println(obj.get("name"));
                 PackageItem packageItem = new PackageItem(obj.get("name").getAsString());
                 packageItems.add(packageItem);
-                
+
                 JsonArray registersJsonArray = obj.get("regs").getAsJsonArray();
                 for (int i = 0; i < registersJsonArray.size(); i++) {
                     JsonObject registerJson = registersJsonArray.get(i).getAsJsonObject();
@@ -100,22 +100,29 @@ public class DataPackageWriter extends JFrame {
         return packageItems;
     }
 
-    public void writeData(int[] address, long []valueToWrite) {
-        try {
-            for (int i = 0; i < address.length; i++) {
-                Thread.sleep(300);
-                System.out.println(address[i] + "/" + Long.toHexString(valueToWrite[i]));
+    public void writeData(int[] address, long[] valueToWrite) {
+        double progressStep = 1.0 / address.length;
+//        new Thread(() -> {
+            try {
+                for (int i = 0; i < address.length; i++) {
+                    Thread.sleep(300);
+                    System.out.println(address[i] + "/" + Long.toHexString(valueToWrite[i]));
 //                modbusClient.WriteMultipleRegisters(address[i], DataUtils.ConvertLongToRegisters(valueToWrite[i]));
-                modbusClient.WriteMultipleRegisters(address[i], device.getParameterByAddress(address[i]).prepareRegisterData(valueToWrite[i]));
+                    modbusClient.WriteMultipleRegisters(address[i], device.getParameterByAddress(address[i]).prepareRegisterData(valueToWrite[i]));
+                    progress = progress + progressStep;
+                    System.out.println(progress + "%");
+                }
+                System.out.println("done");
+                progress = 0.0;
+            } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {
+                Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SocketException ex) {
+                Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("done");
-        } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException | InterruptedException ex) {
-            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException ex) {
-            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        }).start();
+
     }
 
     public void disconnect() {
@@ -125,8 +132,8 @@ public class DataPackageWriter extends JFrame {
             Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void setDevice(Device device){
+
+    public void setDevice(Device device) {
         this.device = device;
     }
 }
