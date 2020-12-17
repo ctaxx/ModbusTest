@@ -46,6 +46,7 @@ public class DataPackageWriter extends JFrame {
     int[] valueToWrite = {0};
     Device device;
     public double progress = 0.0;
+    public boolean enableWriterFlag = true;
 
     public DataPackageWriter() {
         itemArrayList = readJson(ITEMS_PATH);
@@ -102,9 +103,13 @@ public class DataPackageWriter extends JFrame {
 
     public void writeData(int[] address, long[] valueToWrite) {
         double progressStep = 1.0 / address.length;
+        enableWriterFlag = true;
 //        new Thread(() -> {
             try {
                 for (int i = 0; i < address.length; i++) {
+                    if (!enableWriterFlag){
+                        return;
+                    }
                     Thread.sleep(300);
                     System.out.println(address[i] + "/" + Long.toHexString(valueToWrite[i]));
 //                modbusClient.WriteMultipleRegisters(address[i], DataUtils.ConvertLongToRegisters(valueToWrite[i]));

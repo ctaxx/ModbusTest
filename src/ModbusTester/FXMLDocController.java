@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
@@ -45,13 +43,16 @@ public class FXMLDocController implements Initializable {
     private Label label;
 
     @FXML
-    private VBox anchorPane;
+    private BorderPane anchorPane;
 
     @FXML
     private VBox itemsVBox;
 
     @FXML
     private ProgressBar taskProgress;
+    
+    @FXML
+    private Button cancelButton;
 
     ArrayList<Button> buttons;
 
@@ -109,6 +110,7 @@ public class FXMLDocController implements Initializable {
                 }
                 locked = true;
                 taskProgress.setVisible(true);
+                cancelButton.setVisible(true);
                 System.out.println(item.name + " clicked");
                 dataPackageWriter.init();
                 
@@ -117,6 +119,7 @@ public class FXMLDocController implements Initializable {
                     dataPackageWriter.disconnect();
                     locked = false;
                     taskProgress.setVisible(false);
+                    cancelButton.setVisible(false);
                 }).start();
             }
             );
@@ -139,6 +142,11 @@ public class FXMLDocController implements Initializable {
         ParserCSV parser = new ParserCSV(str);
         dataPackageWriter.setDevice(parser.getDevice());
         ipField.setText(parser.getDevice().ipAddress);
+    }
+    
+    @FXML
+    private void handleCancelAction(ActionEvent event){
+        dataPackageWriter.enableWriterFlag = false;
     }
 
 }
