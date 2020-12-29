@@ -13,6 +13,7 @@ import ModbusTester.utils.FuncException;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jssc.SerialPortException;
@@ -35,66 +36,40 @@ public class RTCTester {
     public static void main(String[] args) {
         RTCTester tester = new RTCTester();
         long tmpCounter;
-        int [] dataArray;
+        final int DURATION = 10_000;
         tester.init("COM28");
-
-
 
         System.loadLibrary("libJNI_RTC");
         long queryPerformanceFrequency = QueryPerformanceFrequency();
-        System.out.println("freq");
-        System.out.println(queryPerformanceFrequency);
-//        for (int i = 0; i < 10; i++) {
-//            System.out.println(QueryPerformanceCounter());
-//        }
-//        System.out.println(Long.toHexString(QueryPerformanceCounter()));
-
-        
+        System.out.println("freq " + queryPerformanceFrequency);
 
         try {
-            int [] primaryDataArray = {0};
-            int [] lastDataArray = {0};
+            int[] initialDataArray = modbusClient.ReadHoldingRegisters(61568, 2);
+            int[] primaryDataArray = Arrays.copyOf(initialDataArray, initialDataArray.length);
+            int[] dataArray = Arrays.copyOf(initialDataArray, initialDataArray.length);
+            long millis;
+            System.out.println("Primary values");
+            tmpCounter = QueryPerformanceCounter();
+            millis = System.currentTimeMillis();
+            System.out.println("dev sec " + DataUtils.prepareData(dataArray));
+            System.out.println("queryPerfCounter " + tmpCounter);
+            System.out.println("System.millis()" + millis);
+            System.out.println("==============================");
             
-            long primaryMillis = 0L;
-            long tmpMillis;
-            long lastMillis = 0L;
-            
-            long primaryQuery = 0L;
-            long lastQuery = 0L;
-            
-            boolean flag = true;
-            boolean primaryFlag = false;
-            int counter = 0;
-            while (flag) {
+            while ((DataUtils.prepareData(dataArray) - DataUtils.prepareData(initialDataArray)) < DURATION) {
                 dataArray = modbusClient.ReadHoldingRegisters(61568, 2);
-                counter++;
-//                System.out.println("sec " + DataUtils.prepareData(dataArray));
-                tmpCounter = QueryPerformanceCounter();
-//                System.out.println(tmpCounter);
-                tmpMillis = System.currentTimeMillis();
-//                System.out.println("System.millis()" + tmpMillis);
-                
-                if (!primaryFlag){
-                    primaryDataArray = dataArray;
-                    primaryMillis = tmpMillis;
-                    primaryQuery = tmpCounter;
-                    primaryFlag = true;
+                if (DataUtils.prepareData(dataArray) > DataUtils.prepareData(primaryDataArray)) {
+                    tmpCounter = QueryPerformanceCounter(); 
+                    primaryDataArray = Arrays.copyOf(dataArray, dataArray.length);
                 }
-                if (DataUtils.prepareData(dataArray) > DataUtils.prepareData(primaryDataArray)){
-                    lastDataArray = dataArray;
-                    lastMillis = tmpMillis;
-                    lastQuery = tmpCounter;
-                    flag = false;
-                    
-                } 
             }
-           System.out.println("--------------------"); 
-            System.out.print("millis delta ");
-            System.out.println(lastMillis - primaryMillis);
-            System.out.print("queryPerf delta ");
-            System.out.println(lastQuery - primaryQuery);
-            System.out.println("count = " + counter);
             
+            System.out.println("End values");
+            System.out.println("queryPerfCounter " + tmpCounter);
+            System.out.println("dev sec " + DataUtils.prepareData(dataArray));
+            millis = System.currentTimeMillis();
+            System.out.println("System.millis()" + millis);
+
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException ex) {
             Logger.getLogger(RTCTester.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SocketException ex) {

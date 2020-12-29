@@ -57,7 +57,7 @@ public class DataPackageWriter extends JFrame {
     }
 
     public boolean init() {
-        modbusClient = new ModbusClient("10.6.18.35", 502);
+        modbusClient = new ModbusClient("10.6.18.36", 502);
         boolean success = modbusClient.Available(1500);
         System.out.println("Available " + success);
         if (success) {
