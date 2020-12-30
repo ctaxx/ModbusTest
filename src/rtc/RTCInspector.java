@@ -15,6 +15,13 @@ import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jssc.SerialPortException;
@@ -46,6 +53,17 @@ public class RTCInspector {
             System.out.println("dev sec " + DataUtils.prepareData(dataArray));
             System.out.println("System.millis()" + millis);
             String tmpString = "System.millis()=" + millis;
+            
+            Instant devTime = Instant.ofEpochMilli(DataUtils.prepareData(dataArray));
+            
+//            LocalDateTime devTime = dat2000.plusYears(30);
+            
+            System.out.println("dev instant " + Instant.ofEpochSecond(DataUtils.prepareData(dataArray)));
+            System.out.println("system instant " + Instant.ofEpochMilli(millis));
+            
+//            long diff = ChronoUnit.SECONDS.between(devTime, Instant.ofEpochMilli(millis));
+//            System.out.println("Difference in sec is " + diff);
+            
             writeDataToResultFile(RESULT_PATH, tmpString);
 
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException ex) {
