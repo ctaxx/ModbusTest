@@ -15,13 +15,9 @@ import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.time.Clock;
-import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.util.Calendar;
+import java.time.Month;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jssc.SerialPortException;
@@ -39,6 +35,11 @@ public class RTCInspector {
     public static void main(String[] args) {
         RTCInspector tester = new RTCInspector();
         tester.init("COM28");
+        tester.readDataFromDevice();
+    }
+
+    public void readDataFromDevice() {
+        StringBuilder resultString = new StringBuilder();
 
         try {
 //            read name
@@ -49,22 +50,24 @@ public class RTCInspector {
 
 //            read rtc
             int[] dataArray = modbusClient.ReadHoldingRegisters(61568, 2);
-            long millis = System.currentTimeMillis();
-            System.out.println("dev sec " + DataUtils.prepareData(dataArray));
-            System.out.println("System.millis()" + millis);
-            String tmpString = "System.millis()=" + millis;
-            
-            Instant devTime = Instant.ofEpochMilli(DataUtils.prepareData(dataArray));
-            
-//            LocalDateTime devTime = dat2000.plusYears(30);
-            
-            System.out.println("dev instant " + Instant.ofEpochSecond(DataUtils.prepareData(dataArray)));
-            System.out.println("system instant " + Instant.ofEpochMilli(millis));
-            
-//            long diff = ChronoUnit.SECONDS.between(devTime, Instant.ofEpochMilli(millis));
-//            System.out.println("Difference in sec is " + diff);
-            
-            writeDataToResultFile(RESULT_PATH, tmpString);
+//            long millis = System.currentTimeMillis();
+//            System.out.println("dev sec " + DataUtils.prepareData(dataArray));
+
+//            LocalDateTime devTime = Instant.ofEpochSecond(DataUtils.prepareData(dataArray))     
+//                    .atZone(ZoneId.of("UTC")).toLocalDateTime().plusSeconds(31622400);
+            LocalDateTime devTime = LocalDateTime.of(2000, Month.JANUARY, 1, 0, 0).plusSeconds(DataUtils.prepareData(dataArray));
+            System.out.println("devTime: " + devTime);
+            resultString.append("devTime: ").append(devTime).append("\t");
+
+            LocalDateTime pcTime = LocalDateTime.now();
+            System.out.println("pcTime: " + pcTime);
+            resultString.append("pcTime: ").append(pcTime).append("\t");
+
+            Duration d = Duration.between(pcTime, devTime);
+            System.out.println("difference: " + d.getSeconds() + " sec");
+            resultString.append("diff: ").append(d.getSeconds()).append("\n");
+
+            writeDataToResultFile(RESULT_PATH, resultString.toString());
 
         } catch (ModbusException | SerialPortException | SerialPortTimeoutException | FuncException ex) {
             Logger.getLogger(RTCTester.class.getName()).log(Level.SEVERE, null, ex);
@@ -73,10 +76,6 @@ public class RTCInspector {
         } catch (IOException ex) {
             Logger.getLogger(RTCTester.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public void readSec() {
-
     }
 
     public boolean init(String port) {
