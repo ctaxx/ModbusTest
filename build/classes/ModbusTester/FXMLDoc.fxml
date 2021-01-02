@@ -7,21 +7,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
+<BorderPane fx:id="anchorPane" prefHeight="400.0" prefWidth="650.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
     <!-- <children>-->
     <top>
         <HBox>
-            <Button  text="Add items" prefWidth="150.0"  onAction="#handleButtonAction" fx:id="button" />
-            <Button text="Устройство" prefWidth="150.0"  onAction="#handleAddDeviceAction"  fx:id="deviceButton"/>
+            <Button text="Add device" prefWidth="120.0"  onAction="#handleAddDeviceAction"  fx:id="deviceButton"/>
+            <Button text="Read/Write regs" fx:id="readWriteRegsButton"/>
+            <Button text="Data inspector" fx:id="dataInspectorButton"/>
+            <Button text="Buttons" prefWidth="120.0"  onAction="#handleButtonAction" fx:id="button" />
+            <Button text="RTC inspector" fx:id="rtcInspector"/>
+            <Button text="RTC checker" fx:id="rtcChecker"/>
             <TextField prefColumnCount="12" fx:id="ipField"/>
         </HBox>
     </top>   
     <!--<TableView fx:id = "table"/>-->
+    <left>
+        <VBox minWidth="120.0"  fx:id="devicesVBox"/>
+    </left>
+    
     <center>
         <VBox prefWidth="180.0" spacing="2"  fx:id="itemsVBox"/> 
+        <StackPane fx:id="activeCenterStack"/>
     </center>
-    <bottom>  
-        <HBox>
+    
+    <bottom>
+        <HBox minHeight="25" >
             <ProgressBar prefHeight="25" visible="false"  fx:id="taskProgress"/>
             <Button text="x" prefHeight="25" visible="false" onAction="#handleCancelAction" fx:id="cancelButton"/>
         </HBox>

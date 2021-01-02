@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
@@ -35,6 +36,7 @@ public class FXMLDocController implements Initializable {
     private static final double ITEMS_WIDTH = 180.0;
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
     private boolean locked = false;
+    private boolean activeTask;
 
     @FXML
     private TextField ipField;
@@ -47,12 +49,18 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private VBox itemsVBox;
+    
+    @FXML
+    private VBox devicesVBox;
 
     @FXML
     private ProgressBar taskProgress;
     
     @FXML
     private Button cancelButton;
+    
+    @FXML
+    private StackPane activeCenterStack;
 
     ArrayList<Button> buttons;
 
