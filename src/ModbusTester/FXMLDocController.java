@@ -64,7 +64,6 @@ public class FXMLDocController implements Initializable {
     @FXML
     private StackPane activeCenterStack;
 
-//    ArrayList<Button> buttons;
     /**
      * Initializes the controller class.
      *
@@ -84,9 +83,12 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleReadWriteRegsAction(ActionEvent event) {
         if (readWriteRegsTable == null) {
+
+            setTopStackItemToUnvisible();
+
             readWriteRegsTable = new TableView();
             readWriteRegsTable.setId("readWriteRegsTable");
-            
+
             activeCenterStack.getChildren().add(readWriteRegsTable);
         } else {
             setNodeToFront("readWriteRegsTable");
@@ -95,14 +97,10 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
-//        if (buttons != null) {
-//            return;
-//        }
-//        DoubleProperty barUpdater = new SimpleDoubleProperty(dataPackageWriter.progress);
-//        System.out.println("for binding" + dataPackageWriter.progress);
-//        taskProgress.progressProperty().bind(barUpdater);
 
         if (itemsVBox == null) {
+            setTopStackItemToUnvisible();
+
             itemsVBox = new VBox();
             itemsVBox.setId("itemsVBox");
             itemsVBox.setPrefWidth(ITEMS_WIDTH);
@@ -140,21 +138,6 @@ public class FXMLDocController implements Initializable {
         } else {
             setNodeToFront("itemsVBox");
         }
-        /*
-        Thread progressUpdater = new Thread(() -> {
-            while (true) {
-//                Platform.runLater(() -> taskProgress.setProgress(dataPackageWriter.progress));
-                taskProgress.setProgress(dataPackageWriter.progress);
-                try {
-                    sleep(500);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(FXMLDocController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        progressUpdater.setDaemon(true);
-        progressUpdater.start();
-         */
     }
 
     @FXML
@@ -179,7 +162,7 @@ public class FXMLDocController implements Initializable {
         if (children.size() > 0) {
             Node topChild = children.get(children.size() - 1);
             if (id.equals(topChild.getId())) {
-                System.out.println("Returned: top equals applicant");
+//                System.out.println("Returned: top equals applicant");
                 return;
             }
 
@@ -195,6 +178,15 @@ public class FXMLDocController implements Initializable {
                 applicantChild.toFront();
                 applicantChild.setVisible(true);
             }
+        }
+    }
+
+    private void setTopStackItemToUnvisible() {
+        ObservableList<Node> children = activeCenterStack.getChildren();
+        if (children.size() > 0) {
+            Node topChild = children.get(children.size() - 1);
+            topChild.setVisible(false);
+            topChild.toBack();
         }
     }
 
