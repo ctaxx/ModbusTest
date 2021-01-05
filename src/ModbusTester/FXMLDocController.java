@@ -96,7 +96,7 @@ public class FXMLDocController implements Initializable {
             readWriteRegsTable.setId("readWriteRegsTable");
             
             if (activeDevice != null){
-                TableColumn<Parameter, String> nameCol = new TableColumn<>();
+                TableColumn<Parameter, String> nameCol = new TableColumn<>("Name");
                 
                 readWriteRegsTable.getColumns().add(nameCol);
             }
