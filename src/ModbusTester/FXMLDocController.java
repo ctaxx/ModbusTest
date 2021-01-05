@@ -5,7 +5,9 @@
  */
 package ModbusTester;
 
+import ModbusTester.device.Device;
 import ModbusTester.device.ParserCSV;
+import ModbusTester.parameter.Parameter;
 import ModbusTester.tasks.DataPackageWriter;
 import ModbusTester.utils.FileUtils;
 import java.net.URL;
@@ -27,6 +29,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import static java.lang.Thread.sleep;
+import javafx.scene.control.TableColumn;
 
 /**
  * FXML Controller class
@@ -39,7 +42,10 @@ public class FXMLDocController implements Initializable {
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
 
     VBox itemsVBox;
-    TableView readWriteRegsTable;
+    
+    TableView<Parameter> readWriteRegsTable;
+    
+    Device activeDevice;
 
     private boolean locked = false;
 
@@ -86,10 +92,14 @@ public class FXMLDocController implements Initializable {
 
             setTopStackItemToUnvisible();
 
-            readWriteRegsTable = new TableView();
+            readWriteRegsTable = new TableView<>();
             readWriteRegsTable.setId("readWriteRegsTable");
             
-            
+            if (activeDevice != null){
+                TableColumn<Parameter, String> nameCol = new TableColumn<>();
+                
+                readWriteRegsTable.getColumns().add(nameCol);
+            }
 
             activeCenterStack.getChildren().add(readWriteRegsTable);
         } else {
