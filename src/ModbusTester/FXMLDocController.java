@@ -88,6 +88,8 @@ public class FXMLDocController implements Initializable {
 
             readWriteRegsTable = new TableView();
             readWriteRegsTable.setId("readWriteRegsTable");
+            
+            
 
             activeCenterStack.getChildren().add(readWriteRegsTable);
         } else {
