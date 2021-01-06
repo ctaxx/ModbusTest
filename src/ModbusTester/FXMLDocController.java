@@ -44,9 +44,13 @@ public class FXMLDocController implements Initializable {
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
 
     VBox itemsVBox;
-    
-    TableView<Parameter> readWriteRegsTable;
-    
+
+    @FXML
+    TableView readWriteRegsTable;
+
+    @FXML
+    Button readWriteRegsTestButton;
+
     Device activeDevice;
 
     private boolean locked = false;
@@ -90,29 +94,26 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleReadWriteRegsAction(ActionEvent event) {
-        if (readWriteRegsTable == null) {
-            setTopStackItemToUnvisible();
-            
-            readWriteRegsTable = new TableView<>();
-            readWriteRegsTable.setId("readWriteRegsTable");
-            
-            if (activeDevice != null){
-                ObservableList<Parameter> pList = FXCollections.observableArrayList(activeDevice.parametersArray);
-                readWriteRegsTable.setItems(pList);
-                
-                TableColumn<Parameter, String> nameCol = new TableColumn<>("Name");
-                nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-                
-                TableColumn<Parameter, Integer> addressCol = new TableColumn<>("Address");
-                addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        if (activeDevice != null && readWriteRegsTable.getColumns().isEmpty()) {
+//                TODO check before adding items
 
-                readWriteRegsTable.getColumns().addAll(nameCol, addressCol);
-            }
+            ObservableList<Parameter> pList = FXCollections.observableArrayList(activeDevice.parametersArray);
+            readWriteRegsTable.setItems(pList);
 
-            activeCenterStack.getChildren().add(readWriteRegsTable);
-        } else {
-            setNodeToFront("readWriteRegsTable");
+            TableColumn<Parameter, String> nameCol = new TableColumn<>("Name");
+            nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            TableColumn<Parameter, Integer> addressCol = new TableColumn<>("Address");
+            addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+
+            readWriteRegsTable.getColumns().addAll(nameCol, addressCol);
         }
+        setNodeToFront("readWriteRegsPane");
+    }
+
+    @FXML
+    private void handleReadWriteRegsTestButtonAction(ActionEvent event) {
+        System.out.println("going to test");
     }
 
     @FXML
@@ -170,7 +171,7 @@ public class FXMLDocController implements Initializable {
         ParserCSV parser = new ParserCSV(str);
         dataPackageWriter.setDevice(parser.getDevice());
         ipField.setText(parser.getDevice().ipAddress);
-        
+
         activeDevice = parser.getDevice();
     }
 
@@ -180,10 +181,11 @@ public class FXMLDocController implements Initializable {
     }
 
     private void setNodeToFront(String id) {
+//        TODO divide states visible and onFront
         ObservableList<Node> children = activeCenterStack.getChildren();
         if (children.size() > 0) {
             Node topChild = children.get(children.size() - 1);
-            if (id.equals(topChild.getId())) {
+            if (id.equals(topChild.getId()) && topChild.isVisible()) {
 //                System.out.println("Returned: top equals applicant");
                 return;
             }

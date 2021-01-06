@@ -20,14 +20,21 @@
             <TextField prefColumnCount="12" fx:id="ipField"/>
         </HBox>
     </top>   
-    <!--<TableView fx:id = "table"/>-->
+
     <left>
         <VBox minWidth="120.0"  fx:id="devicesVBox"/>
     </left>
     
     <center>
-    <!--    <VBox prefWidth="180.0" spacing="2"  fx:id="itemsVBox"/> -->
-        <StackPane fx:id="activeCenterStack"/>
+        <!--    <VBox prefWidth="180.0" spacing="2"  fx:id="itemsVBox"/> -->
+        <StackPane fx:id="activeCenterStack">
+            <children>
+                <VBox fx:id="readWriteRegsPane" visible="false">
+                    <Button text="Test" onAction="#handleReadWriteRegsTestButtonAction"  fx:id="readWriteRegsTestButton"/>
+                    <TableView fx:id="readWriteRegsTable"/>
+                </VBox>
+            </children>
+        </StackPane>
     </center>
     
     <bottom>

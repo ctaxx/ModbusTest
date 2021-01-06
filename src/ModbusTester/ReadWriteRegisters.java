@@ -83,7 +83,6 @@ public class ReadWriteRegisters {
 
     public void test(ArrayList<Parameter> array) {
         for (Parameter param : array) {
-            //          if (param.address == 227) {
             resultString.append("<tr>");
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
@@ -121,7 +120,6 @@ public class ReadWriteRegisters {
                     Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            //       }// end of single register writing
         }
         resultString.append("</table></html>");
         System.out.println(resultString.toString());
