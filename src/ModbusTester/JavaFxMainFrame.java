@@ -26,6 +26,7 @@ public class JavaFxMainFrame extends Application {
         scene = new Scene(root);
         
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Modbus Test Suite");
         primaryStage.show();
     }
     

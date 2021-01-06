@@ -33,6 +33,8 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import static java.lang.Thread.sleep;
+import javafx.geometry.Orientation;
+import javafx.scene.layout.TilePane;
 
 /**
  * FXML Controller class
@@ -42,12 +44,13 @@ import static java.lang.Thread.sleep;
 public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
+    private static final double ITEMS_GAPS = 2.0;
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
     public ReadWriteRegisters readWriteRegisters = new ReadWriteRegisters();
 
     Task activeTask;
 
-    VBox itemsVBox;
+    TilePane itemsVBox;
 //    Double progress = 0.0;
 
     @FXML
@@ -80,6 +83,9 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private StackPane activeCenterStack;
+
+    @FXML
+    private VBox menuVBox;
 
     /**
      * Initializes the controller class.
@@ -141,7 +147,9 @@ public class FXMLDocController implements Initializable {
         if (itemsVBox == null) {
             setTopStackItemToUnvisible();
 
-            itemsVBox = new VBox();
+            itemsVBox = new TilePane(Orientation.VERTICAL);
+            itemsVBox.setVgap(ITEMS_GAPS);
+            itemsVBox.setHgap(ITEMS_GAPS);
             itemsVBox.setId("itemsVBox");
             itemsVBox.setPrefWidth(ITEMS_WIDTH);
 
@@ -197,6 +205,17 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleCancelAction(ActionEvent event) {
         activeTask.enableDoingDeals = false;
+    }
+
+    @FXML
+    private void handleSideMenuButtonAction(ActionEvent event) {
+        if (menuVBox.isVisible()) {
+            menuVBox.setMinWidth(0.0);
+            menuVBox.setVisible(false);
+        } else {
+            menuVBox.setMinWidth(70.0);
+            menuVBox.setVisible(true);
+        }
     }
 
     private void setNodeToFront(String id) {

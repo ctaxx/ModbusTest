@@ -29,10 +29,16 @@
         <!--    <VBox prefWidth="180.0" spacing="2"  fx:id="itemsVBox"/> -->
         <StackPane fx:id="activeCenterStack">
             <children>
-                <VBox fx:id="readWriteRegsPane" visible="false">
-                    <Button text="Test" onAction="#handleReadWriteRegsTestButtonAction"  fx:id="readWriteRegsTestButton"/>
-                    <Button text="Save" disable="true"  fx:id="readWriteRegsSaveButton"/>
-                    <TableView fx:id="readWriteRegsTable"/>
+                <VBox  fx:id="readWriteRegsPane" visible="false">
+                    <HBox >
+                        <Button text="Test" onAction="#handleReadWriteRegsTestButtonAction"  fx:id="readWriteRegsTestButton"/>
+                        <Button text="Save" disable="true"  fx:id="readWriteRegsSaveButton"/>
+                    </HBox>  
+                    <HBox>
+                        <TableView  prefHeight="1000.0" prefWidth="1000.0"  fx:id="readWriteRegsTable"/> 
+                        <Button maxWidth="0.1" prefHeight="1000.0" onAction="#handleSideMenuButtonAction"  fx:id="sideMenuButton"/>
+                        <VBox prefWidth="0.0" visible="false" fx:id="menuVBox"/> 
+                    </HBox>
                 </VBox>
             </children>
         </StackPane>
