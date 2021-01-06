@@ -29,7 +29,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import static java.lang.Thread.sleep;
+import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  * FXML Controller class
@@ -89,16 +91,22 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleReadWriteRegsAction(ActionEvent event) {
         if (readWriteRegsTable == null) {
-
             setTopStackItemToUnvisible();
-
+            
             readWriteRegsTable = new TableView<>();
             readWriteRegsTable.setId("readWriteRegsTable");
             
             if (activeDevice != null){
-                TableColumn<Parameter, String> nameCol = new TableColumn<>("Name");
+                ObservableList<Parameter> pList = FXCollections.observableArrayList(activeDevice.parametersArray);
+                readWriteRegsTable.setItems(pList);
                 
-                readWriteRegsTable.getColumns().add(nameCol);
+                TableColumn<Parameter, String> nameCol = new TableColumn<>("Name");
+                nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+                
+                TableColumn<Parameter, Integer> addressCol = new TableColumn<>("Address");
+                addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+
+                readWriteRegsTable.getColumns().addAll(nameCol, addressCol);
             }
 
             activeCenterStack.getChildren().add(readWriteRegsTable);
@@ -130,7 +138,7 @@ public class FXMLDocController implements Initializable {
                     locked = true;
                     taskProgress.setVisible(true);
                     cancelButton.setVisible(true);
-                    System.out.println(item.name + " clicked");
+
                     dataPackageWriter.init();
 
                     new Thread(() -> {
@@ -162,6 +170,8 @@ public class FXMLDocController implements Initializable {
         ParserCSV parser = new ParserCSV(str);
         dataPackageWriter.setDevice(parser.getDevice());
         ipField.setText(parser.getDevice().ipAddress);
+        
+        activeDevice = parser.getDevice();
     }
 
     @FXML

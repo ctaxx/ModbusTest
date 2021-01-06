@@ -39,6 +39,14 @@ public class Parameter {
 
 //    public String readResult = "R0 Ch0";
 //    public String writeResult = "W0";
+    
+    public String getName(){
+        return this.name;
+    }
+    
+    public Integer getAddress(){
+        return this.address;
+    }
 
     public void setPhysicalMaxValue(long physicalMaxValue) {
         this.physicalMaxValue = physicalMaxValue;

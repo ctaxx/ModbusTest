@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="anchorPane" prefHeight="400.0" prefWidth="650.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
+<BorderPane fx:id="anchorPane" prefHeight="600.0" prefWidth="840.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ModbusTester.FXMLDocController">
     <!-- <children>-->
     <top>
         <HBox>

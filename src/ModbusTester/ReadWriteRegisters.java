@@ -7,6 +7,7 @@ package ModbusTester;
 
 import ModbusTester.utils.FuncException;
 import ModbusRTU.ModbusClient;
+import ModbusTester.device.Device;
 import ModbusTester.parameter.Parameter;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
@@ -25,6 +26,8 @@ import jssc.SerialPortTimeoutException;
 public class ReadWriteRegisters {
 
     ModbusClient modbusClient;
+    Device device;
+    
     StringBuilder resultString = new StringBuilder("<html><style type=\"text/css\">\n"
             + "   TABLE {\n"
             + "    border-collapse: collapse; /* Убираем двойные линии между ячейками */\n"
