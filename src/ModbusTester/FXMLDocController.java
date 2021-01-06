@@ -138,7 +138,6 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
-
         if (itemsVBox == null) {
             setTopStackItemToUnvisible();
 

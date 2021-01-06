@@ -31,6 +31,7 @@
             <children>
                 <VBox fx:id="readWriteRegsPane" visible="false">
                     <Button text="Test" onAction="#handleReadWriteRegsTestButtonAction"  fx:id="readWriteRegsTestButton"/>
+                    <Button text="Save" disable="true"  fx:id="readWriteRegsSaveButton"/>
                     <TableView fx:id="readWriteRegsTable"/>
                 </VBox>
             </children>
