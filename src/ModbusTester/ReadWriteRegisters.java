@@ -6,9 +6,8 @@
 package ModbusTester;
 
 import ModbusTester.utils.FuncException;
-import ModbusRTU.ModbusClient;
-import ModbusTester.device.Device;
 import ModbusTester.parameter.Parameter;
+import ModbusTester.tasks.Task;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
 import java.net.SocketException;
@@ -23,11 +22,8 @@ import jssc.SerialPortTimeoutException;
  *
  * @author bykov_s_p
  */
-public class ReadWriteRegisters {
+public class ReadWriteRegisters extends Task {
 
-    ModbusClient modbusClient;
-    Device device;
-    
     StringBuilder resultString = new StringBuilder("<html><style type=\"text/css\">\n"
             + "   TABLE {\n"
             + "    border-collapse: collapse; /* Убираем двойные линии между ячейками */\n"
@@ -42,47 +38,15 @@ public class ReadWriteRegisters {
             + "  </style>\n"
             + "<table><tr><th>Название параметра</th><th>Адрес</th><th>Атрибут</th><th>Диапазон</th><th>Чтение</th><th>Запись в диапазоне</th><th>Запись вне диапазона</th></tr>");
 
-    public boolean init(String ip, int port) {
-        modbusClient = new ModbusClient(ip, port);
-        boolean success = modbusClient.Available(2500);
-        System.out.println(success);
-        if (success) {
-            try {
-                modbusClient.Connect();
-            } catch (IOException ex) {
-                Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return success;
-    }
-
-    public boolean init(String port) {
-        if ((modbusClient != null) && modbusClient.isConnected()) {
-            return true;
-        }
-        modbusClient = new ModbusClient(port, 115200, 8);
-
-        try {
-            modbusClient.Connect();
-        } catch (IOException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modbusClient.isConnected();
-    }
-
     public void test(ArrayList<Parameter> array) {
+        progress = 0.0;
+        enableDoingDeals = true;
+        double step = 1.0 / array.size();
+        
         for (Parameter param : array) {
+            if (!enableDoingDeals) {
+                return;
+            }
             resultString.append("<tr>");
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
@@ -120,6 +84,7 @@ public class ReadWriteRegisters {
                     Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            progress += step;
         }
         resultString.append("</table></html>");
         System.out.println(resultString.toString());

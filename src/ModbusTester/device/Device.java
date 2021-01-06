@@ -5,6 +5,7 @@
  */
 package ModbusTester.device;
 
+import ModbusTester.connections.Connection;
 import ModbusTester.parameter.Parameter;
 import java.util.ArrayList;
 
@@ -17,6 +18,7 @@ public class Device {
     public int port;
     public String protocol;
     public ArrayList<Parameter> parametersArray;
+    public Connection connection;
     
     public Parameter getParameterByAddress(int address){
         return parametersArray.stream().filter(p -> p.address == address).findAny().orElse(null);

@@ -5,9 +5,7 @@
  */
 package ModbusTester.tasks;
 
-import ModbusRTU.ModbusClient;
 import ModbusTester.PackageItem;
-import ModbusTester.device.Device;
 import ModbusTester.parameter.TmpParam;
 import ModbusTester.utils.FuncException;
 import com.google.gson.JsonArray;
@@ -17,7 +15,6 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
 import com.google.gson.JsonObject;
@@ -32,49 +29,18 @@ import java.util.List;
  *
  * @author s.bikov
  */
-public class DataPackageWriter extends JFrame {
+public class DataPackageWriter extends Task {
 
     public static final String ITEMS_PATH = "D:\\buttons.json";
     public static final String ENCODING = "Cp1251";
-
-    ModbusClient modbusClient;
+   
     public ArrayList<PackageItem> itemArrayList;
-    int[] targetAddresses = {570, 571};
-    int[][] targetValues = {{500}, {500}};
-    int initAddress = 570;
-    int lastAddress = 593;
     int[] valueToWrite = {0};
-    Device device;
-    public double progress = 0.0;
-    public boolean enableWriterFlag = true;
-
+    
     public DataPackageWriter() {
         itemArrayList = readJson(ITEMS_PATH);
     }
-
-    public void setDeviceParameters() {
-
-    }
-
-    public boolean init() {
-        modbusClient = new ModbusClient("10.6.18.35", 502);
-        boolean success = modbusClient.Available(1500);
-        System.out.println("Available " + success);
-        if (success) {
-            try {
-                modbusClient.Connect();
-            } catch (IOException ex) {
-                Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return success;
-    }
-
+    
     public ArrayList<PackageItem> readJson(String path) {
         ArrayList<PackageItem> packageItems = new ArrayList<>();
         try {
@@ -103,11 +69,11 @@ public class DataPackageWriter extends JFrame {
 
     public void writeData(int[] address, long[] valueToWrite) {
         double progressStep = 1.0 / address.length;
-        enableWriterFlag = true;
+        enableDoingDeals = true;
 //        new Thread(() -> {
             try {
                 for (int i = 0; i < address.length; i++) {
-                    if (!enableWriterFlag){
+                    if (!enableDoingDeals){
                         return;
                     }
                     Thread.sleep(300);
@@ -127,18 +93,5 @@ public class DataPackageWriter extends JFrame {
                 Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
 //        }).start();
-
-    }
-
-    public void disconnect() {
-        try {
-            modbusClient.Disconnect();
-        } catch (IOException | SerialPortException ex) {
-            Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
     }
 }

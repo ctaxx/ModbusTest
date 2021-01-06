@@ -9,6 +9,7 @@ import ModbusTester.device.Device;
 import ModbusTester.device.ParserCSV;
 import ModbusTester.parameter.Parameter;
 import ModbusTester.tasks.DataPackageWriter;
+import ModbusTester.tasks.Task;
 import ModbusTester.utils.FileUtils;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,10 +29,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import static java.lang.Thread.sleep;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import static java.lang.Thread.sleep;
 
 /**
  * FXML Controller class
@@ -42,8 +43,12 @@ public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
+    public ReadWriteRegisters readWriteRegisters = new ReadWriteRegisters();
+
+    Task activeTask;
 
     VBox itemsVBox;
+//    Double progress = 0.0;
 
     @FXML
     TableView readWriteRegsTable;
@@ -85,6 +90,7 @@ public class FXMLDocController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        startProgressBarUpdater();
         taskProgress.setProgress(0.0);
     }
 
@@ -109,10 +115,24 @@ public class FXMLDocController implements Initializable {
             readWriteRegsTable.getColumns().addAll(nameCol, addressCol);
         }
         setNodeToFront("readWriteRegsPane");
+        activeTask = readWriteRegisters;
     }
 
     @FXML
     private void handleReadWriteRegsTestButtonAction(ActionEvent event) {
+        if (activeDevice != null) {
+            showProgress();
+            readWriteRegsTestButton.setDisable(true);
+            readWriteRegisters.init();
+
+            new Thread(() -> {
+                readWriteRegisters.test(activeDevice.parametersArray);
+                readWriteRegisters.disconnect();
+                readWriteRegsTestButton.setDisable(false);
+                hideProgress();
+            }).start();
+
+        }
         System.out.println("going to test");
     }
 
@@ -137,8 +157,8 @@ public class FXMLDocController implements Initializable {
                         return;
                     }
                     locked = true;
-                    taskProgress.setVisible(true);
-                    cancelButton.setVisible(true);
+                    activeTask = dataPackageWriter;
+                    showProgress();
 
                     dataPackageWriter.init();
 
@@ -146,8 +166,7 @@ public class FXMLDocController implements Initializable {
                         dataPackageWriter.writeData(tmpArr, tmpVal);
                         dataPackageWriter.disconnect();
                         locked = false;
-                        taskProgress.setVisible(false);
-                        cancelButton.setVisible(false);
+                        hideProgress();
                     }).start();
                 }
                 );
@@ -155,7 +174,6 @@ public class FXMLDocController implements Initializable {
             }
             activeCenterStack.getChildren().add(itemsVBox);
 
-            startProgressBarUpdater();
         } else {
             setNodeToFront("itemsVBox");
         }
@@ -169,15 +187,17 @@ public class FXMLDocController implements Initializable {
         // TODO
         String str = FileUtils.fileReader(fileChooser.showOpenDialog(anchorPane.getScene().getWindow()));
         ParserCSV parser = new ParserCSV(str);
-        dataPackageWriter.setDevice(parser.getDevice());
-        ipField.setText(parser.getDevice().ipAddress);
 
         activeDevice = parser.getDevice();
+//        TODO avoid hardcoding
+        readWriteRegisters.setDevice(activeDevice);
+        dataPackageWriter.setDevice(activeDevice);
+        ipField.setText(parser.getDevice().ipAddress);
     }
 
     @FXML
     private void handleCancelAction(ActionEvent event) {
-        dataPackageWriter.enableWriterFlag = false;
+        activeTask.enableDoingDeals = false;
     }
 
     private void setNodeToFront(String id) {
@@ -219,7 +239,9 @@ public class FXMLDocController implements Initializable {
         Thread progressUpdater = new Thread(() -> {
             while (true) {
 //                Platform.runLater(() -> taskProgress.setProgress(dataPackageWriter.progress));
-                taskProgress.setProgress(dataPackageWriter.progress);
+                if (activeTask != null) {
+                    taskProgress.setProgress(activeTask.progress);
+                }
                 try {
                     sleep(500);
                 } catch (InterruptedException ex) {
@@ -231,4 +253,13 @@ public class FXMLDocController implements Initializable {
         progressUpdater.start();
     }
 
+    private void showProgress() {
+        taskProgress.setVisible(true);
+        cancelButton.setVisible(true);
+    }
+
+    private void hideProgress() {
+        taskProgress.setVisible(false);
+        cancelButton.setVisible(false);
+    }
 }
