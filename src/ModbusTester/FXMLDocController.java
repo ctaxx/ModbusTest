@@ -11,6 +11,7 @@ import ModbusTester.parameter.Parameter;
 import ModbusTester.tasks.DataPackageWriter;
 import ModbusTester.tasks.Task;
 import ModbusTester.utils.FileUtils;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -188,12 +189,15 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleAddDeviceAction(ActionEvent event) {
-        System.out.println("adding device");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
-        // TODO
-        String str = FileUtils.fileReader(fileChooser.showOpenDialog(anchorPane.getScene().getWindow()));
-        ParserCSV parser = new ParserCSV(str);
+
+        File devFile = fileChooser.showOpenDialog(anchorPane.getScene().getWindow());
+        if (devFile == null) {
+            return;
+        }
+
+        ParserCSV parser = new ParserCSV(FileUtils.fileReader(devFile));
 
         activeDevice = parser.getDevice();
 //        TODO avoid hardcoding
