@@ -163,7 +163,7 @@ public class FXMLDocController implements Initializable {
         if (dest == null) {
             return;
         }
-        try (FileWriter fw = new FileWriter(dest + ".hmtl")) {
+        try (FileWriter fw = new FileWriter(dest)) {
             fw.write(readWriteRegisters.resultString.toString());
         } catch (IOException ex) {
             System.err.println(ex.getMessage());

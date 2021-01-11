@@ -22,7 +22,7 @@ public class JavaFxMainFrame extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDoc.fxml"));
-        
+        root.getStylesheets().add("ModbusTester/fxmldoc.css");
         scene = new Scene(root);
         
         primaryStage.setScene(scene);
