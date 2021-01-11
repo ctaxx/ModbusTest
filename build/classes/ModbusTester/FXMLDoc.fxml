@@ -32,7 +32,7 @@
                 <VBox  fx:id="readWriteRegsPane" visible="false">
                     <HBox >
                         <Button text="Test" onAction="#handleReadWriteRegsTestButtonAction"  fx:id="readWriteRegsTestButton"/>
-                        <Button text="Save" disable="true"  fx:id="readWriteRegsSaveButton"/>
+                        <Button text="Save" disable="true" onAction="#handleReadWriteRegsSaveButtonAction"  fx:id="readWriteRegsSaveButton"/>
                     </HBox>  
                     <HBox>
                         <TableView  prefHeight="1000.0" prefWidth="1000.0"  fx:id="readWriteRegsTable"/> 

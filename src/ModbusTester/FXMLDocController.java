@@ -12,6 +12,8 @@ import ModbusTester.tasks.DataPackageWriter;
 import ModbusTester.tasks.Task;
 import ModbusTester.utils.FileUtils;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -63,6 +65,9 @@ public class FXMLDocController implements Initializable {
     @FXML
     Button readWriteRegsTestButton;
 
+    @FXML
+    Button readWriteRegsSaveButton;
+
     Device activeDevice;
 
     private boolean locked = false;
@@ -102,11 +107,6 @@ public class FXMLDocController implements Initializable {
         // TODO
         startProgressBarUpdater();
         taskProgress.setProgress(0.0);
-
-        fileChooser.setTitle("Open device file");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("CSV", "*.csv")
-        );
     }
 
     public void initialize() {
@@ -145,10 +145,29 @@ public class FXMLDocController implements Initializable {
                 readWriteRegisters.disconnect();
                 readWriteRegsTestButton.setDisable(false);
                 hideProgress();
+                readWriteRegsSaveButton.setDisable(false);
             }).start();
 
         }
         System.out.println("going to test");
+    }
+
+    @FXML
+    private void handleReadWriteRegsSaveButtonAction(ActionEvent event) {
+        fileChooser.setTitle("Save result file");
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("HTML", "*.html")
+        );
+        File dest = fileChooser.showSaveDialog(anchorPane.getScene().getWindow());
+        if (dest == null) {
+            return;
+        }
+        try (FileWriter fw = new FileWriter(dest + ".hmtl")) {
+            fw.write(readWriteRegisters.resultString.toString());
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
     }
 
     @FXML
@@ -197,6 +216,11 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleAddDeviceAction(ActionEvent event) {
+        fileChooser.setTitle("Open device file");
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV", "*.csv")
+        );
         File devFile = fileChooser.showOpenDialog(anchorPane.getScene().getWindow());
         if (devFile == null) {
             return;
