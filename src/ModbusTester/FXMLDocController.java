@@ -46,6 +46,9 @@ public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
     private static final double ITEMS_GAPS = 2.0;
+
+    FileChooser fileChooser = new FileChooser();
+
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
     public ReadWriteRegisters readWriteRegisters = new ReadWriteRegisters();
 
@@ -99,6 +102,11 @@ public class FXMLDocController implements Initializable {
         // TODO
         startProgressBarUpdater();
         taskProgress.setProgress(0.0);
+
+        fileChooser.setTitle("Open device file");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV", "*.csv")
+        );
     }
 
     public void initialize() {
@@ -189,9 +197,6 @@ public class FXMLDocController implements Initializable {
 
     @FXML
     private void handleAddDeviceAction(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open file");
-
         File devFile = fileChooser.showOpenDialog(anchorPane.getScene().getWindow());
         if (devFile == null) {
             return;
