@@ -11,10 +11,10 @@
     <!-- <children>-->
     <top>
         <HBox>
-            <Button text="Add device" prefWidth="120.0"  onAction="#handleAddDeviceAction"  fx:id="deviceButton"/>
+            <Button text="Add device" onAction="#handleAddDeviceAction"  fx:id="deviceButton"/>
             <Button text="Read/Write regs" onAction="#handleReadWriteRegsAction"  fx:id="readWriteRegsButton"/>
             <Button text="Data inspector" fx:id="dataInspectorButton"/>
-            <Button text="Buttons" prefWidth="120.0"  onAction="#handleButtonAction" fx:id="button" />
+            <Button text="Buttons" onAction="#handleButtonAction" fx:id="button" />
             <Button text="RTC inspector" fx:id="rtcInspector"/>
             <Button text="RTC checker" fx:id="rtcChecker"/>
             <TextField prefColumnCount="12" fx:id="ipField"/>

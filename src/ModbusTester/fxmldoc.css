@@ -1,7 +1,3 @@
-/*
- * Empty Stylesheet file.
- */
-
 .mainFxmlClass {
 
 }
@@ -16,7 +12,9 @@
     -fx-font-size: 11pt;
     -fx-font-family: "Courier New";
     -fx-base: rgb(34, 34, 34);
-    -fx-background: rgb(122,122,122);
+/*    -fx-background: rgb(122,122,122);
+    -fx-background: rgb(53,38,35);*/
+    -fx-background: rgb(94, 80, 77);
 }
 
 .button{
@@ -24,16 +22,17 @@
     -fx-border-color: rgb(217,93,0);
     -fx-border-radius: 5;
     -fx-padding: 3 6 6 6;
-    -fx-focus-color: red;
+    -fx-focus-color: rgb(237,28,36);
 }
 
 .button:focused{
-    -fx-border-color:rgb(237,28,36); 
-    -fx-text-fill:rgb(237,28,36); 
+    -fx-border-color: rgb(237,28,36); 
+    -fx-text-fill: rgb(237,28,36); 
 }
 
 .table-view{
     -fx-background-color: transparent;
+    -fx-border-color: rgb(122,122,122);
 }
 
 .table-view .column-header-background .label{
@@ -50,6 +49,16 @@ rgb(122,122,122) boulder
 rgb(217,93,0) bamboo
 rgb(61, 33, 23) cedar
 rgb(237,28,36) pigment red
+rgb(34, 34, 34) raisin black
+rgb(53,38,35) treehouse
+rgb(94, 80, 77) don juan
+rgb(215, 148, 100) di serria
+rgb(44, 2, 4) sepia black
+rgb(178, 111, 63) brown sugar
+rgb(116, 48, 1) red beach
+rgb(44, 18, 0) wood bark
+rgb(34,35,30) log cabin
+rgb(143,135,108) arrow town
 
 
 rgb(225, 228, 203); moon mist
