@@ -70,7 +70,6 @@ public class DataPackageWriter extends Task {
     public void writeData(int[] address, long[] valueToWrite) {
         double progressStep = 1.0 / address.length;
         enableDoingDeals = true;
-//        new Thread(() -> {
             try {
                 for (int i = 0; i < address.length; i++) {
                     if (!enableDoingDeals){
@@ -92,6 +91,5 @@ public class DataPackageWriter extends Task {
             } catch (IOException ex) {
                 Logger.getLogger(DataPackageWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
-//        }).start();
     }
 }

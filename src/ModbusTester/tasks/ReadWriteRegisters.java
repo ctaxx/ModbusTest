@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModbusTester;
+package ModbusTester.tasks;
 
+import ModbusTester.ModbusTesterMainFrame;
 import ModbusTester.utils.FuncException;
 import ModbusTester.parameter.Parameter;
-import ModbusTester.tasks.Task;
 import de.re.easymodbus.exceptions.ModbusException;
 import java.io.IOException;
 import java.net.SocketException;
@@ -24,7 +24,7 @@ import jssc.SerialPortTimeoutException;
  */
 public class ReadWriteRegisters extends Task {
 
-    StringBuilder resultString = new StringBuilder("<html><style type=\"text/css\">\n"
+    public StringBuilder resultString = new StringBuilder("<html><style type=\"text/css\">\n"
             + "   TABLE {\n"
             + "    border-collapse: collapse; /* Убираем двойные линии между ячейками */\n"
             + "   }\n"

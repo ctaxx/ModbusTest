@@ -5,6 +5,7 @@
  */
 package ModbusTester;
 
+import ModbusTester.tasks.ReadWriteRegisters;
 import ModbusTester.utils.FileUtils;
 import ModbusTester.device.ParserCSV;
 import ModbusTester.parameter.Parameter;
