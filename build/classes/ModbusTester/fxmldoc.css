@@ -74,6 +74,10 @@
     -fx-accent:rgb(237,28,36);
 }
 
+.label{
+    -fx-text-fill:rgb(217,93,0);
+}
+
 /*
 rgb(122,122,122) boulder
 rgb(217,93,0) bamboo

@@ -48,6 +48,7 @@
         <HBox minHeight="25" >
             <ProgressBar minWidth="180"  prefHeight="25" visible="false"  fx:id="taskProgress"/>
             <Button text="x" prefHeight="25" visible="false" onAction="#handleCancelAction" fx:id="cancelButton"/>
+            <Label text="" fx:id="bottomInfoLabel"/>
         </HBox>
     </bottom>
     <!-- </children>-->

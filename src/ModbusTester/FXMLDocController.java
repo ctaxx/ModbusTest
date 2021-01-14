@@ -49,6 +49,7 @@ public class FXMLDocController implements Initializable {
 
     private static final double ITEMS_WIDTH = 180.0;
     private static final double ITEMS_GAPS = 2.0;
+    private static final String CANNOT_CONNECT_WARNING = "cannot connect";
 
     FileChooser fileChooser = new FileChooser();
 
@@ -97,6 +98,9 @@ public class FXMLDocController implements Initializable {
     @FXML
     private VBox menuVBox;
 
+    @FXML
+    private Label bottomInfoLabel;
+
     /**
      * Initializes the controller class.
      *
@@ -137,9 +141,12 @@ public class FXMLDocController implements Initializable {
     @FXML
     private void handleReadWriteRegsTestButtonAction(ActionEvent event) {
         if (activeDevice != null) {
+            if (!readWriteRegisters.init()) {
+                bottomInfoLabel.setText(CANNOT_CONNECT_WARNING);
+                return;
+            }
             showProgress();
             readWriteRegsTestButton.setDisable(true);
-            readWriteRegisters.init();
 
             new Thread(() -> {
                 readWriteRegisters.test(activeDevice.parametersArray);
@@ -192,11 +199,14 @@ public class FXMLDocController implements Initializable {
                     if (locked) {
                         return;
                     }
-                    locked = true;
+                    if (!dataPackageWriter.init()) {
+                        bottomInfoLabel.setText(CANNOT_CONNECT_WARNING);
+                        return;
+                    }
+                    
                     activeTask = dataPackageWriter;
+                    locked = true;
                     showProgress();
-
-                    dataPackageWriter.init();
 
                     new Thread(() -> {
                         dataPackageWriter.writeData(tmpArr, tmpVal);
