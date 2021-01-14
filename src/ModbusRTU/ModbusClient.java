@@ -682,6 +682,14 @@ public class ModbusClient {
         return returnValue;
     }
 
+    public static byte calculateLRC(byte[] bytes) {
+        byte LRC = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            LRC ^= bytes[i];
+        }
+        return LRC;
+    }
+
     /**
      * Read Discrete Inputs from Server device (FC2) and publishes the values to
      * a MQTT-Broker. The Topic will be
