@@ -127,7 +127,7 @@ public class ParserCSV {
             } else if (dataType.contains("Float32")) {
                 param = new Float32Parameter();
                 //            param.setFuncToWrite(myArray.get(i).get(6));
-            } else if (dataType.contains("String256")) {
+            } else if (dataType.contains("String 256")) {
                 param = new String256Parameter();
             } else {
                 param = new Parameter();

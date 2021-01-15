@@ -28,8 +28,8 @@
 }
 
 .button:focused{
-    -fx-border-color: rgb(237,28,36); 
-    -fx-text-fill: rgb(237,28,36); 
+    -fx-border-color: rgb(237,28,36);
+    -fx-text-fill: rgb(237,28,36);
 }
 
 .table-view{

@@ -5,13 +5,25 @@
  */
 package ModbusTester.parameter;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  *
  * @author s.bikov
  */
-public class String256Parameter extends Parameter{
+public class String256Parameter extends Parameter {
+
     @Override
-    public String getRange(){
-        return "String256";
+    public String getRange() {
+        return "String 256";
+    }
+
+    @Override
+    public String getValueString(int[] dataArray) {
+//        TODO avoid creating a lot of String objects
+        return Arrays.stream(dataArray)
+                .mapToObj(v -> Character.toString((char) (v & 0xFF)) + Character.toString((char) (v >> 8)))
+                .collect(Collectors.joining());
     }
 }
