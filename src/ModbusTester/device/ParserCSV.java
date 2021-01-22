@@ -116,7 +116,7 @@ public class ParserCSV {
             } else if (dataType.contains("Enum")) {
                 param = new EnumParameter();
                 param.setPhysicalMaxValue(Long.parseLong(dataType.replaceAll("Enum", "").trim()) - 1);
-//            temporary stub
+//            temporary stub - needs adaptive design
                 param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("Date time")) {
                 param = new DateTime32Parameter();
@@ -129,6 +129,8 @@ public class ParserCSV {
                 //            param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("String 256")) {
                 param = new String256Parameter();
+//            temporary stub - needs adaptive design
+                param.setFuncToWrite(myArray.get(i).get(6));
             } else {
                 param = new Parameter();
 //            temporary stub                
@@ -161,8 +163,8 @@ public class ParserCSV {
         }
         return parametersArrayList;
     }
-    
-    public Device getDevice(){
+
+    public Device getDevice() {
         Device device = new Device();
         device.parametersArray = this.parameterArray;
         device.ipAddress = this.currentIP;

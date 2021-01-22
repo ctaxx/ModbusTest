@@ -15,7 +15,9 @@ import java.util.logging.Logger;
  * @author s.bikov
  */
 public class String256Parameter extends Parameter {
+
     public static final String ENCODING = "Cp1251";
+    public static final String[] TEST_STRINGS = {"Test", "Тест", "Dev"};
 
     @Override
     public String getRange() {
@@ -41,5 +43,37 @@ public class String256Parameter extends Parameter {
             Logger.getLogger(String256Parameter.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "";
+    }
+
+    @Override
+    public int[][] getValidValue() {
+        try {
+            byte[] testStringArray = TEST_STRINGS[1].getBytes(ENCODING);
+            int[] dataToRegister = new int[16];
+            for (int i = 0; i < testStringArray.length; i += 2) {
+                byte[] tmp = {
+                    0, 0,
+                    (i + 1) < testStringArray.length ? testStringArray[i + 1] : 0,
+                    testStringArray[i]
+                };
+                dataToRegister[i / 2] = ByteBuffer.wrap(tmp).getInt();
+            }
+            return new int[][]{dataToRegister};
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(String256Parameter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new int[0][0];
+    }
+
+    @Override
+    public int[][] getOutOfRangeValue() {
+//        TODO too long strings
+        return new int[0][0];
+    }
+    
+    @Override
+    public boolean isLogicalMatchesPhysical() {
+//        TODO too long strings;
+        return true;
     }
 }
