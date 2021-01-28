@@ -124,7 +124,7 @@ public class ParserCSV {
                 param.setFuncToWrite("-");
             } else if (dataType.contains("bit")) {
                 param = new BitParameter();
-            } else if (dataType.contains("Float32")) {
+            } else if (dataType.contains("Float 32")) {
                 param = new Float32Parameter();
                 //            param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("String 256")) {

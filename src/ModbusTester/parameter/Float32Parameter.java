@@ -5,6 +5,8 @@
  */
 package ModbusTester.parameter;
 
+import ModbusRTU.ModbusClient;
+
 /**
  *
  * @author s.bikov
@@ -15,5 +17,8 @@ public class Float32Parameter extends Parameter {
         return Float.toString(Float.MIN_VALUE) + ".." + Float.toString(Float.MAX_VALUE);
     }
     
-    
+    @Override
+    public String getValueString(int[] dataArray) {
+        return Float.toString(ModbusClient.ConvertRegistersToFloat(dataArray));
+    }
 }

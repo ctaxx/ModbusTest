@@ -33,7 +33,7 @@ public class Task {
             return init(device.ipAddress, 502);
         }
         if (device.protocol.matches("Modbus RTU")) {
-            return init("COM4");
+            return init("COM5");
         }
         return false;
     }
