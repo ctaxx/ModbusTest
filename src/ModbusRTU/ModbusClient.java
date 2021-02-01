@@ -1497,7 +1497,7 @@ public class ModbusClient {
      * @throws SerialPortException
      */
     public void WriteSingleCoil(int startingAddress, boolean value) throws de.re.easymodbus.exceptions.ModbusException,
-            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException {
+            UnknownHostException, SocketException, IOException, SerialPortException, SerialPortTimeoutException, FuncException{
         if (tcpClientSocket == null & !udpFlag) {
             throw new de.re.easymodbus.exceptions.ConnectionException("connection error");
         }
@@ -1535,13 +1535,15 @@ public class ModbusClient {
         }
         byte[] serialdata = null;
         if (serialFlag) {
-            serialdata = new byte[8];
-            java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
-            serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
-            serialPort.writeBytes(serialdata);
-            if (debug) {
-                StoreLogData.getInstance().Store("Send Serial-Data: " + Arrays.toString(serialdata));
-            }
+//            serialdata = new byte[8];
+//            java.lang.System.arraycopy(data, 6, serialdata, 0, 8);
+//            serialPort.purgePort(SerialPort.PURGE_RXCLEAR);
+//            serialPort.writeBytes(serialdata);
+//            if (debug) {
+//                StoreLogData.getInstance().Store("Send Serial-Data: " + Arrays.toString(serialdata));
+//            }
+            sendSerialData(data);
+
             long dateTimeSend = DateTime.getDateTimeTicks();
             byte receivedUnitIdentifier = (byte) 0xFF;
             serialdata = new byte[256];
@@ -1600,30 +1602,31 @@ public class ModbusClient {
                 }
             }
         }
-        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x01) {
-            if (debug) {
-                StoreLogData.getInstance().Store("FunctionCodeNotSupportedException Throwed");
-            }
-            throw new de.re.easymodbus.exceptions.FunctionCodeNotSupportedException("Function code not supported by master");
-        }
-        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x02) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Starting adress invalid or starting adress + quantity invalid");
-            }
-            throw new de.re.easymodbus.exceptions.StartingAddressInvalidException("Starting adress invalid or starting adress + quantity invalid");
-        }
-        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x03) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Quantity invalid");
-            }
-            throw new de.re.easymodbus.exceptions.QuantityInvalidException("Quantity invalid");
-        }
-        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x04) {
-            if (debug) {
-                StoreLogData.getInstance().Store("Error reading");
-            }
-            throw new de.re.easymodbus.exceptions.ModbusException("Error reading");
-        }
+//        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x01) {
+//            if (debug) {
+//                StoreLogData.getInstance().Store("FunctionCodeNotSupportedException Throwed");
+//            }
+//            throw new de.re.easymodbus.exceptions.FunctionCodeNotSupportedException("Function code not supported by master");
+//        }
+//        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x02) {
+//            if (debug) {
+//                StoreLogData.getInstance().Store("Starting adress invalid or starting adress + quantity invalid");
+//            }
+//            throw new de.re.easymodbus.exceptions.StartingAddressInvalidException("Starting adress invalid or starting adress + quantity invalid");
+//        }
+//        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x03) {
+//            if (debug) {
+//                StoreLogData.getInstance().Store("Quantity invalid");
+//            }
+//            throw new de.re.easymodbus.exceptions.QuantityInvalidException("Quantity invalid");
+//        }
+//        if (((int) (data[7] & 0xff)) == 0x85 & data[8] == 0x04) {
+//            if (debug) {
+//                StoreLogData.getInstance().Store("Error reading");
+//            }
+//            throw new de.re.easymodbus.exceptions.ModbusException("Error reading");
+//        }
+        checkModbusResponse(data, this.functionCode);
     }
 
     /**

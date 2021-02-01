@@ -124,6 +124,7 @@ public class ParserCSV {
                 param.setFuncToWrite("-");
             } else if (dataType.contains("bit")) {
                 param = new BitParameter();
+                param.setFuncToWrite(myArray.get(i).get(6));
             } else if (dataType.contains("Float 32")) {
                 param = new Float32Parameter();
                 //            param.setFuncToWrite(myArray.get(i).get(6));
@@ -141,7 +142,7 @@ public class ParserCSV {
             param.comment = myArray.get(i).get(1);
             param.address = Integer.parseInt(myArray.get(i).get(2));
             param.numOfRegs = Short.parseShort(myArray.get(i).get(4));
-            param.setFuncToRead(myArray.get(i).get(5));
+            param.setFuncToRead(myArray.get(i).get(5));           
 //            param.setFuncToWrite(myArray.get(i).get(6));
             StringBuilder attrBuilder = new StringBuilder();
             if (!myArray.get(i).get(5).contains("-")) {

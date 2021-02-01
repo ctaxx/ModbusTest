@@ -15,4 +15,9 @@ public class BitParameter extends Parameter{
     public String getRange(){
         return "0/1";
     }
+    
+    @Override
+    public int [][] getValidValue(){
+        return new int[][]{{0}, {1}};
+    }
 }

@@ -36,13 +36,13 @@ public class ReadWriteRegisters extends Task {
             + "    background: #b0e0e6; /* Цвет фона */\n"
             + "   }\n"
             + "  </style>\n"
-            + "<table><tr><th>Название параметра</th><th>Адрес</th><th>Атрибут</th><th>Диапазон</th><th>Чтение</th><th>Запись в диапазоне</th><th>Запись вне диапазона</th></tr>");
+            + "<table><tr><th>Название параметра</th><th>Адрес</th><th>Атрибут</th><th>Диапазон</th><th>Функция</th><th>Чтение</th><th>Запись в диапазоне</th><th>Запись вне диапазона</th></tr>");
 
     public void test(ArrayList<Parameter> array) {
         progress = 0.0;
         enableDoingDeals = true;
         double step = 1.0 / array.size();
-        
+
         for (Parameter param : array) {
             if (!enableDoingDeals) {
                 return;
@@ -51,6 +51,19 @@ public class ReadWriteRegisters extends Task {
             resultString.append("<td>").append(param.name).append("</td>");
             resultString.append("<td>").append(param.address).append("</td>");
             resultString.append("<td>").append(param.attribute).append("</td>");
+
+            resultString.append("<td>");
+            if (param.funcToRead != 0) {
+                resultString.append(param.funcToRead);
+            }
+            if (param.funcToRead != 0 && param.funcToWrite != 0) {
+                resultString.append("/");
+            }
+            if (param.funcToWrite != 0) {
+                resultString.append(param.funcToWrite);
+            }
+            resultString.append("</td>");
+
             resultString.append("<td>").append(param.getRange()).append("</td>");
 
             int[] initialDataArray = {0};
@@ -75,7 +88,7 @@ public class ReadWriteRegisters extends Task {
             resultString.append(writingWrongValues(param));
 
             // writing initial value
-            if (param.funcToWrite == 16) {
+            if (param.funcToWrite == 5 || param.funcToWrite == 16) {
                 System.out.println("going to write initial value");
                 try {
                     tryToWriteAParam(param, initialDataArray);
@@ -88,7 +101,6 @@ public class ReadWriteRegisters extends Task {
         }
         resultString.append("</table></html>");
         System.out.println(resultString.toString());
-
     }
 
     public String writingValidValues(Parameter param) {
@@ -96,7 +108,7 @@ public class ReadWriteRegisters extends Task {
 
         StringBuilder bunchOfValidValues;
 
-        if (param.funcToWrite == 16) {
+        if (param.funcToWrite == 5 || param.funcToWrite == 16) {
 
             bunchOfValidValues = new StringBuilder();
             int[][] validValuesToWrite = param.getValidValue();
@@ -106,7 +118,8 @@ public class ReadWriteRegisters extends Task {
 
                 try {
                     tryToWriteAParam(param, validValueToWrite);
-                    if (param.funcToRead == 3) {
+
+                    if (param.funcToRead == 1 || param.funcToRead == 3) {
                         allowedToWriteValidValue = checkWritingResult(tryToReadAParam(param), validValueToWrite);
                     } else {
                         bunchOfValidValues = new StringBuilder("NA");
@@ -214,7 +227,12 @@ public class ReadWriteRegisters extends Task {
     public void tryToWriteAParam(Parameter param, int[] value) throws FuncException {
         try {
             System.out.println("going to write data " + param.getValueString(value) + " to param " + param.address + " " + param.name);
-            modbusClient.WriteMultipleRegisters(param.address, value);
+            if (param.funcToWrite == 5) {
+                modbusClient.WriteSingleCoil(param.address, (value[0] == 0) ? false : true);
+            }
+            if (param.funcToWrite == 16) {
+                modbusClient.WriteMultipleRegisters(param.address, value);
+            }
         } catch (ModbusException | SocketException | SerialPortException | SerialPortTimeoutException ex) {
             Logger.getLogger(ReadWriteRegisters.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
