@@ -36,7 +36,7 @@ public class ReadWriteRegisters extends Task {
             + "    background: #b0e0e6; /* Цвет фона */\n"
             + "   }\n"
             + "  </style>\n"
-            + "<table><tr><th>Название параметра</th><th>Адрес</th><th>Атрибут</th><th>Диапазон</th><th>Функция</th><th>Чтение</th><th>Запись в диапазоне</th><th>Запись вне диапазона</th></tr>");
+            + "<table><tr><th>Название параметра</th><th>Адрес</th><th>Атрибут</th><th>Функция</th><th>Диапазон</th><th>Чтение</th><th>Запись в диапазоне</th><th>Запись вне диапазона</th></tr>");
 
     public void test(ArrayList<Parameter> array) {
         progress = 0.0;

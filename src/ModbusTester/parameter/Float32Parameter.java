@@ -21,4 +21,11 @@ public class Float32Parameter extends Parameter {
     public String getValueString(int[] dataArray) {
         return Float.toString(ModbusClient.ConvertRegistersToFloat(dataArray));
     }
+    
+//    TODO
+    @Override
+    public int[][] getValidValue() {
+        int[][] ia = {{0x1}};
+        return ia;
+    }
 }

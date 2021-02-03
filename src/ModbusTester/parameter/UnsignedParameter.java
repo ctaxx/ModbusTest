@@ -58,6 +58,20 @@ public class UnsignedParameter extends Parameter {
             }
             return new int[][]{DataUtils.ConvertARegister(logicalMinValue + 3L)};
         }
+        
+ //        TODO       
+        if (numOfRegs == 2) {
+            if (arraySize == 3) {
+                return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue),
+                    DataUtils.ConvertLongToRegisters(logicalMediumValue),
+                    DataUtils.ConvertLongToRegisters(logicalMaxValue)};
+            }
+            if (arraySize == 2) {
+                return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue),
+                    DataUtils.ConvertLongToRegisters(logicalMaxValue)};
+            }
+            return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue + 3L)};
+        }
         return new int[][]{DataUtils.ConvertLongToRegisters(logicalMinValue + 3L)};
 //        int[] ia = {0xA};
 //        return ia;
