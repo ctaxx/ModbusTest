@@ -112,7 +112,7 @@ public class ModbusTesterMainFrame extends JFrame implements ActionListener {
                 }
 
                 if (parser.protocol.matches("Modbus RTU")) {
-                    enabled = tester.init("COM4");
+                    enabled = tester.init("COM3");
                     System.out.println("enabled = " + enabled);
                 }
 

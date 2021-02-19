@@ -10,6 +10,7 @@ import ModbusTester.device.Device;
 import ModbusTester.device.ParserCSV;
 import ModbusTester.parameter.Parameter;
 import ModbusTester.tasks.DataPackageWriter;
+import ModbusTester.tasks.Scriptor;
 import ModbusTester.tasks.Task;
 import ModbusTester.utils.FileUtils;
 import java.io.File;
@@ -55,12 +56,15 @@ public class FXMLDocController implements Initializable {
 
     public DataPackageWriter dataPackageWriter = new DataPackageWriter();
     public ReadWriteRegisters readWriteRegisters = new ReadWriteRegisters();
+    public Scriptor scriptor = new Scriptor();
 
     Task activeTask;
 
     TilePane itemsVBox;
 //    Double progress = 0.0;
 
+    TilePane scriptVBox;
+    
     @FXML
     TableView readWriteRegsTable;
 
@@ -224,6 +228,56 @@ public class FXMLDocController implements Initializable {
             setNodeToFront("itemsVBox");
         }
     }
+    
+    @FXML
+    private void handleScriptorAction(ActionEvent event) {
+        if (scriptVBox == null) {
+            setTopStackItemToUnvisible();
+
+            scriptVBox = new TilePane(Orientation.VERTICAL);
+            scriptVBox.setVgap(ITEMS_GAPS);
+            scriptVBox.setHgap(ITEMS_GAPS);
+            scriptVBox.setId("scriptVBox");
+            scriptVBox.setPrefWidth(ITEMS_WIDTH);
+
+            for (int i = 0; i < scriptor.itemArrayList.size(); i++) {
+                PackageItem item = scriptor.itemArrayList.get(i);
+                Button tmpButton = new Button(item.name);
+                tmpButton.setMinWidth(ITEMS_WIDTH);
+                int[] tmpArr = item.paramArray.stream().mapToInt(e -> (int) e.address).toArray();
+                long[] tmpVal = item.paramArray.stream().mapToLong(e -> (long) e.value).toArray();
+                
+                
+                tmpButton.setOnAction(e -> {
+                    if (locked) {
+                        return;
+                    }
+
+                    if (!scriptor.init()) {
+                        bottomInfoLabel.setText(CANNOT_CONNECT_WARNING);
+                        return;
+                    }
+                    
+                    activeTask = scriptor;
+                    locked = true;
+                    showProgress();
+
+                    new Thread(() -> {
+                        scriptor.writeData(tmpArr, tmpVal);
+                        scriptor.disconnect();
+                        locked = false;
+                        hideProgress();
+                    }).start();
+                }
+                );
+                scriptVBox.getChildren().add(tmpButton);
+            }
+            activeCenterStack.getChildren().add(scriptVBox);
+
+        } else {
+            setNodeToFront("scriptVBox");
+        }
+    }
 
     @FXML
     private void handleAddDeviceAction(ActionEvent event) {
@@ -243,6 +297,7 @@ public class FXMLDocController implements Initializable {
 //        TODO avoid hardcoding
         readWriteRegisters.setDevice(activeDevice);
         dataPackageWriter.setDevice(activeDevice);
+        scriptor.setDevice(activeDevice);
         ipField.setText(parser.getDevice().ipAddress);
     }
 

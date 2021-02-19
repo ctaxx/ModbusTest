@@ -17,6 +17,7 @@
             <Button text="Buttons" onAction="#handleButtonAction" fx:id="button" />
             <Button text="RTC inspector" fx:id="rtcInspector"/>
             <Button text="RTC checker" fx:id="rtcChecker"/>
+            <Button text="Scriptor" onAction="#handleScriptorAction" fx:id="scriptorButton"/>
             <TextField prefColumnCount="12" fx:id="ipField"/>
         </HBox>
     </top>   

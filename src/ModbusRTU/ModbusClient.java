@@ -50,7 +50,7 @@ public class ModbusClient {
     private byte[] quantity = new byte[2];
     private boolean udpFlag = false;
     private boolean serialFlag = false;
-    private int connectTimeout = 600;
+    private int connectTimeout = 200;
     private InputStream inStream;
     private DataOutputStream outStream;
     public byte[] receiveData;
@@ -1987,7 +1987,7 @@ public class ModbusClient {
                 while (receivedUnitIdentifier != this.unitIdentifier
                         & !((DateTime.getDateTimeTicks() - dateTimeSend) > 10000 * this.connectTimeout)) {
                     for (int i = 0; i < expectedlength; i++) {
-                        //  serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
+//                          serialdata = serialPort.readBytes(expectedlength, this.connectTimeout);
                         serialdata[i] = serialPort.readBytes(1, this.connectTimeout)[0];
                     }
                     receivedUnitIdentifier = serialdata[0];
